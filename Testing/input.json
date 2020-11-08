@@ -1,0 +1,24 @@
+{
+  "modes": [
+    {
+        "name":"5 questions",
+        "images": ["galleta.png", "saber.png"],
+        "words_right": ["galleta", "saber"],
+        "words_wrong": ["galletta", "saver"]
+    },
+    {
+        "name":"8 questions",
+        "images": ["galleta.png", "saber.png"],
+        "words_right": ["galleta", "saber"],
+        "words_wrong": ["galletta", "saver"]
+    }
+  ],
+  "children_history":[
+      {
+          "name":"Manuel",
+          "most_fail_word":"",
+          "ranking":123
+      }
+  ]
+  
+}

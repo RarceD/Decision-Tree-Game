@@ -4,7 +4,7 @@ import paho.mqtt.client as mqtt
 
 PUBLISH_TOPIC = 'TFG_B/children'
 LISTEN_TOPIC = 'TFG_B/teacher'
-
+remove_window = False
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
@@ -25,11 +25,14 @@ def on_message(client, userdata, message):
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
+    global remove_window
     msg = str(message.payload.decode("utf-8"))
     print("message received: ", msg)
     parsed_json = (json.loads(msg))
-    print('_________________')
-    # if (parsed_json['esp'] == e.uuid):
+    print(parsed_json['start'])
+    if (parsed_json['start']):
+        remove_window = True
+        print(parsed_json['mode'])
     #     # print(parsed_json['esp'])
     #     # Get the distance and the uuid of the beacon:
     #     beacon_distance = float(parsed_json['beacon'][index]['distance'])
@@ -83,7 +86,7 @@ def main():
     image = pygame.image.load(
         r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\person_icon.png')
     image = pygame.transform.scale(image, (50, 50))
-    remove_window = False
+    # remove_window = False
     while run:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
