@@ -84,7 +84,7 @@ def main():
     child_name = ''
     run = True
     image = pygame.image.load(
-        r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\person_icon.png')
+        r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
     image = pygame.transform.scale(image, (50, 50))
     remove_window = False
     while run:
