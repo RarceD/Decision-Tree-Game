@@ -1,13 +1,19 @@
 {
   "modes": [
     {
-        "name":"5 questions",
+        "name":"5 Questions",
+        "words_right": ["persona", "saber"],
+        "words_wrong": ["perzona", "saver"],
+        "images": ["perso_icon.png", "saber.png"]
+    },
+    {
+        "name":"8 Questions",
         "images": ["galleta.png", "saber.png"],
         "words_right": ["galleta", "saber"],
         "words_wrong": ["galletta", "saver"]
     },
     {
-        "name":"8 questions",
+        "name":"10 Questions",
         "images": ["galleta.png", "saber.png"],
         "words_right": ["galleta", "saber"],
         "words_wrong": ["galletta", "saver"]
