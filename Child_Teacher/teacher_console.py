@@ -6,6 +6,7 @@ PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
 childrens = []
 
+
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
     client = mqtt.Client("asdf123bea34asdf")  # create new instance
@@ -26,19 +27,22 @@ def on_message(client, userdata, message):
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
     msg = str(message.payload.decode("utf-8"))
-    print("message received: ", msg)
+    # print("message received: ", msg)
     parsed_json = (json.loads(msg))
-    print('_________________')
+    # print('_________________')
     new_children = parsed_json['uuid']
-    print(new_children)
+    # print(new_children)
     # if (new_children in childrens):
     #     pass
     # else:
     #     childrens.append(new_children)
-    childrens.append(new_children)
+    if (len(childrens)>24):
+        childrens.append("dijimos 25 guapita ...")
+    else:
+        childrens.append(new_children)
 
-    print(childrens)
-    
+    # print(childrens)
+
     #     # print(parsed_json['esp'])
     #     # Get the distance and the uuid of the beacon:
     #     beacon_distance = float(parsed_json['beacon'][index]['distance'])
@@ -48,24 +52,30 @@ def on_message(client, userdata, message):
 def load_page_waitting_child(win, font, child_name, input_box, color, game_name, input_enter):
     win.fill((30, 30, 30))
 
-    pygame.draw.rect(win, (255, 255, 255), (700, 100, 200,100))
-    txt_game_name = font.render("5 WORDS", True,  (0x00,0x00,0x00))
+    pygame.draw.rect(win, (255, 255, 255), input_enter)
+    txt_game_name = font.render("5 WORDS", True,  (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (750, 140))
-    
-    pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
-    index = 0
-    for c in childrens:
-        a = font.render(c, True, (0x00, 0x00, 0x00))
-        win.blit(a, (200, 200 + index))
-        index += 50
 
-    # txt_game_name = font.render("Enter", True, (0xFF,0xFF,0xFF))
+    pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
+    offset = 0
+    spacing = 0
+    for index, c in enumerate(childrens):
+        a = font.render(c, True, (0x00, 0x00, 0x00))
+        win.blit(a, (150+spacing, 150 + offset))
+        offset += 40
+        if (index == 12):
+            offset = 0
+            spacing = 250
+
+        
+
+    # txt_game_name = font.in("Enter", True, (0xFF,0xFF,0xFF))
     # win.blit(txt_game_name, (350, 220))
 
     i = 0
     while i < 1024:
-        # pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-        # pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
         i += 100
 
 
@@ -75,7 +85,7 @@ def main():
     font = pygame.font.Font(None, 32)
     clock = pygame.time.Clock()
     input_box = pygame.Rect(350, 500, 400, 50)
-    input_enter = pygame.Rect(450, 600, 140, 50)
+    input_enter = pygame.Rect(700, 100, 200, 100)
     game_name = pygame.Rect(200, 100, 600, 300)
     color_inactive = pygame.Color('lightskyblue3')
     color_active = pygame.Color('dodgerblue2')
@@ -99,11 +109,10 @@ def main():
                 else:
                     active = False
                 if input_enter.collidepoint(event.pos):
-                    if (len(child_name) != 0):
-                        remove_window = True
-                        msg = "{\"uuid\":\""+child_name+"\"}"
-                        client.publish(PUBLISH_TOPIC, msg)
-                        print("Enter Press")
+                    # remove_window = True
+                    msg = "{\"start\": true,\"mode\":5}"
+                    client.publish(PUBLISH_TOPIC, msg)
+                    print("Enter Press")
                 # Change the current color of the input box.
                 color = color_active if active else color_inactive
             if event.type == pygame.KEYDOWN:
