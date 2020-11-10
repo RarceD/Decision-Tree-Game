@@ -12,6 +12,7 @@ current_window = 1111
 PUBLISH_TOPIC = 'TFG_B/children'
 LISTEN_TOPIC = 'TFG_B/teacher'
 
+
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
     client = mqtt.Client("asdadf324wsd4asdf")  # create new instance
@@ -87,7 +88,7 @@ def load_page_waiting(win, font, image, child_name):
 
 def load_page_game(win, font, image_children, child_name, image_game_logo):
     win.fill((30, 30, 30))
-    win.blit(image_game_logo, (870, 30)) 
+    win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (200, 50, 600, 150), 2)
     pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (300, 300, 400, 100), 2)
@@ -97,7 +98,6 @@ def load_page_game(win, font, image_children, child_name, image_game_logo):
     win.blit(txt_surface, (300, 120))
     txt_surface = font.render("PREGUNTA", True, color_letters)
     win.blit(txt_surface, (400, 333))
-
 
     color_circle = (87, 154, 230)
     radio_cicle = 50
@@ -114,11 +114,10 @@ def load_page_game(win, font, image_children, child_name, image_game_logo):
     txt_surface = font.render("01", True, color_text)
     win.blit(txt_surface, (500-offset, 600-offset))
 
-    #Child name and picture:
+    # Child name and picture:
     txt_surface = font.render(child_name, True, color_letters)
     win.blit(txt_surface, (100, 700))
     win.blit(image_children, (40, 700))
-
 
 
 def load_page_end(win):
@@ -140,7 +139,7 @@ def main():
     active = False
     child_name = ''
     run = True
-    current_window =  WINDOWS['LOGIN']
+    current_window = WINDOWS['LOGIN']
     image = pygame.image.load(
         r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
     image = pygame.transform.scale(image, (50, 50))
@@ -160,10 +159,10 @@ def main():
                 else:
                     active = False
                 if input_enter.collidepoint(event.pos):
-                    if (current_window== WINDOWS['LOGIN']):
+                    if (current_window == WINDOWS['LOGIN']):
                         if (len(child_name) != 0):
                             current_window = WINDOWS['WAITING_TEACHER']
-                            msg = "{\"uuid\":\""+child_name+"\"}"
+                            msg = "{\"uuid\":\""+child_name+",\"\"question\":8}"
                             client.publish(PUBLISH_TOPIC, msg)
                             print("Enter Press")
                 # Change the current color of the input box.
@@ -186,7 +185,7 @@ def main():
             if (len(child_name) == 0):
                 child_name = "Laura Lomez"
             load_page_waiting(win, font, image, child_name)
-            
+
         elif (current_window == WINDOWS['ON_GAME']):
             if (len(child_name) == 0):
                 child_name = "Laura Lomez"

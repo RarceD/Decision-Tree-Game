@@ -5,6 +5,15 @@ import paho.mqtt.client as mqtt
 PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
 childrens = []
+progress = []
+
+WINDOWS = {
+    'WAITING_CHILDRENS': 0,
+    'ON_GAME': 1,
+    'FINISH': 3,
+}
+current_window = 1111
+run = True
 
 
 def connect_mqtt():
@@ -23,25 +32,30 @@ def connect_mqtt():
 
 
 def on_message(client, userdata, message):
+    global progress, childrens
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
     msg = str(message.payload.decode("utf-8"))
     # print("message received: ", msg)
     parsed_json = (json.loads(msg))
-    # print('_________________')
     new_children = parsed_json['uuid']
-    # print(new_children)
-    # if (new_children in childrens):
-    #     pass
-    # else:
-    #     childrens.append(new_children)
-    if (len(childrens)>24):
-        childrens.append("dijimos 25 guapita ...")
+    print(new_children)
+    if (new_children in childrens):
+        # Update the status of the questions
+        for index, c in enumerate(childrens):
+            if (c == new_children):
+                progress[index] = parsed_json['question']
     else:
-        childrens.append(new_children)
+        if (len(childrens) > 24):
+            childrens.append("dijimos 25 guapita ...")
+        else:
+            question = parsed_json['question']
+            childrens.append(new_children)
+            progress.append(question)
 
-    # print(childrens)
+    print(childrens)
+    print(progress)
 
     #     # print(parsed_json['esp'])
     #     # Get the distance and the uuid of the beacon:
@@ -49,12 +63,53 @@ def on_message(client, userdata, message):
     #     beacon_uuid = str(parsed_json['beacon'][index]['uuid'])
 
 
-def load_page_waitting_child(win, font, child_name, input_box, color, game_name, input_enter):
+def load_page_waitting_child(win, font, child_name, input_box, color, game_name, input_enter, events, client, active, color_active, color_inactive):
+    global run, current_window, childrens, progress, PUBLISH_TOPIC
     win.fill((30, 30, 30))
-
-    pygame.draw.rect(win, (255, 255, 255), input_enter)
+    space_box = 200
+    pygame.draw.rect(win, (255, 255, 255), (700, 100, 200, 100))
     txt_game_name = font.render("5 WORDS", True,  (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (750, 140))
+
+    pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box, 200, 100))
+    txt_game_name = font.render("8 WORDS", True,  (0x00, 0x00, 0x00))
+    win.blit(txt_game_name, (750, 140 + space_box))
+
+    pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box*2, 200, 100))
+    txt_game_name = font.render("10 WORDS", True,  (0x00, 0x00, 0x00))
+    win.blit(txt_game_name, (750, 140 + space_box*2))
+
+    for event in events:
+        if event.type == pygame.QUIT:
+            run = False
+        if event.type == pygame.KEYDOWN:
+            if active:
+                if event.key == pygame.K_RETURN:
+                    print(child_name)
+                    child_name = ''
+                elif event.key == pygame.K_BACKSPACE:
+                    child_name = child_name[:-1]
+                else:
+                    child_name += event.unicode
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            # Change the current color of the input box.
+            color = color_active if active else color_inactive
+            # If the user clicked on the input_box rect.
+            if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
+                current_window = WINDOWS['ON_GAME']
+                msg = "{\"start\": true,\"mode\":5}"
+                client.publish(PUBLISH_TOPIC, msg)
+                print("Mode 5")
+            if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
+                current_window = WINDOWS['ON_GAME']
+                msg = "{\"start\": true,\"mode\":8}"
+                client.publish(PUBLISH_TOPIC, msg)
+                print("Mode 8")
+            if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
+                current_window = WINDOWS['ON_GAME']
+                msg = "{\"start\": true,\"mode\":10}"
+                client.publish(PUBLISH_TOPIC, msg)
+                print("Mode 10")
 
     pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
     offset = 0
@@ -67,19 +122,44 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
             offset = 0
             spacing = 250
 
-        
-
     # txt_game_name = font.in("Enter", True, (0xFF,0xFF,0xFF))
     # win.blit(txt_game_name, (350, 220))
 
-    i = 0
-    while i < 1024:
-        pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-        pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-        i += 100
+
+def load_page_game(win, font, events):
+    global run, childrens, progress
+    win.fill((30, 30, 30))
+
+    # THe list of children
+    pygame.draw.rect(win, (181, 255, 255), (100, 100, 700, 600))
+    offset = 0
+    spacing = 0
+    for index, c in enumerate(childrens):
+        a = font.render(c, True, (0x00, 0x00, 0x00))
+        win.blit(a, (150+spacing, 150 + offset))
+        r = 0
+        while (r < progress[index]):
+            pygame.draw.rect(win, (0, 0, 0), (320 + r *20+spacing, 150+ offset, 20, 30))
+            pygame.draw.rect(win, (217, 0, 30), (320 + r *20+2+spacing, 150+2+ offset, 20-4, 30-4))
+            r += 1
+        offset += 40
+        if (index == 12):
+            offset = 0
+            spacing = 250
+    offset = 0
+    # for index, p in enumerate(progress):
+    #     while (offset < p):
+    #         pygame.draw.rect(win, (0, 0, 0), (320 + offset *20, 150, 20, 30))
+    #         pygame.draw.rect(win, (217, 0, 30), (320 + offset *20+2, 150+2, 20-4, 30-4))
+    #         offset += 1
+
+    for event in events:
+        if event.type == pygame.QUIT:
+            run = False
 
 
 def main():
+    global current_window, run, childrens, progress
     client = connect_mqtt()
     win = pygame.display.set_mode((1024, 768))
     font = pygame.font.Font(None, 32)
@@ -92,43 +172,24 @@ def main():
     color = color_inactive
     active = False
     child_name = ''
-    run = True
+    current_window = WINDOWS['WAITING_CHILDRENS']
     image = pygame.image.load(
         r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
     image = pygame.transform.scale(image, (50, 50))
-    remove_window = False
+
     while run:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            if event.type == pygame.MOUSEBUTTONDOWN:
-                # If the user clicked on the input_box rect.
-                if input_box.collidepoint(event.pos):
-                    # Toggle the active variable.
-                    active = not active
-                else:
-                    active = False
-                if input_enter.collidepoint(event.pos):
-                    # remove_window = True
-                    msg = "{\"start\": true,\"mode\":5}"
-                    client.publish(PUBLISH_TOPIC, msg)
-                    print("Enter Press")
-                # Change the current color of the input box.
-                color = color_active if active else color_inactive
-            if event.type == pygame.KEYDOWN:
-                if active:
-                    if event.key == pygame.K_RETURN:
-                        print(child_name)
-                        child_name = ''
-                    elif event.key == pygame.K_BACKSPACE:
-                        child_name = child_name[:-1]
-                    else:
-                        child_name += event.unicode
-        if not remove_window:
+        if current_window == WINDOWS['WAITING_CHILDRENS']:
             load_page_waitting_child(win, font, child_name,
-                                     input_box, color, game_name, input_enter)
-        else:
-            win.fill((30, 30, 30))
+                                     input_box, color, game_name, input_enter, pygame.event.get(), client,  active, color_active, color_inactive)
+        elif current_window == WINDOWS['ON_GAME']:
+            load_page_game(win, font, pygame.event.get())
+        elif current_window == WINDOWS['FINISH']:
+            load_page_game(win, font)
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
         pygame.display.flip()
         clock.tick(30)
 
