@@ -1,6 +1,7 @@
 import pygame
 import json
 import paho.mqtt.client as mqtt
+from ModeClass import Mode
 
 PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
@@ -14,6 +15,20 @@ WINDOWS = {
 }
 current_window = 1111
 run = True
+modes = []
+
+
+def read_config_file(modes):
+    with open('input.json') as json_file:
+        data = json.load(json_file)
+        for index, p in enumerate(data['modes']):
+            modes.append(Mode(p['name']))
+            modes[index].words_right.append(p["words_right"])
+            modes[index].words_wrong.append(p["words_wrong"])
+            modes[index].images.append(p["images"])
+
+    for m in modes:
+        m.print_itself()
 
 
 def connect_mqtt():
@@ -64,19 +79,19 @@ def on_message(client, userdata, message):
 
 
 def load_page_waitting_child(win, font, child_name, input_box, color, game_name, input_enter, events, client, active, color_active, color_inactive):
-    global run, current_window, childrens, progress, PUBLISH_TOPIC
+    global run, current_window, childrens, progress, PUBLISH_TOPIC, modes
     win.fill((30, 30, 30))
     space_box = 200
     pygame.draw.rect(win, (255, 255, 255), (700, 100, 200, 100))
-    txt_game_name = font.render("5 WORDS", True,  (0x00, 0x00, 0x00))
+    txt_game_name = font.render("4 WORDS", True,  (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (750, 140))
 
     pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box, 200, 100))
-    txt_game_name = font.render("8 WORDS", True,  (0x00, 0x00, 0x00))
+    txt_game_name = font.render("6 WORDS", True,  (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (750, 140 + space_box))
 
     pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box*2, 200, 100))
-    txt_game_name = font.render("10 WORDS", True,  (0x00, 0x00, 0x00))
+    txt_game_name = font.render("8 WORDS", True,  (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (750, 140 + space_box*2))
 
     for event in events:
@@ -97,18 +112,37 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
             # If the user clicked on the input_box rect.
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
                 current_window = WINDOWS['ON_GAME']
-                msg = "{\"start\": true,\"mode\":5}"
-                client.publish(PUBLISH_TOPIC, msg)
+                data = {
+                    "start": True,
+                    "mode": 4,
+                }
+                data['words_right'] = modes[0].words_right[0]
+                data['words_wrong'] = modes[0].words_wrong[0]
+
+                json_dump = json.dumps(data)
+                client.publish(PUBLISH_TOPIC, json_dump)
                 print("Mode 5")
             if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
                 current_window = WINDOWS['ON_GAME']
-                msg = "{\"start\": true,\"mode\":8}"
-                client.publish(PUBLISH_TOPIC, msg)
+                data = {
+                    "start": True,
+                    "mode": 6,
+                }
+                data['words_right'] = modes[1].words_right[0]
+                data['words_wrong'] = modes[1].words_wrong[0]
+                json_dump = json.dumps(data)
+                client.publish(PUBLISH_TOPIC, json_dump)
                 print("Mode 8")
             if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
                 current_window = WINDOWS['ON_GAME']
-                msg = "{\"start\": true,\"mode\":10}"
-                client.publish(PUBLISH_TOPIC, msg)
+                data = {
+                    "start": True,
+                    "mode": 10,
+                }
+                data['words_right'] = modes[2].words_right[0]
+                data['words_wrong'] = modes[2].words_wrong[0]
+                json_dump = json.dumps(data)
+                client.publish(PUBLISH_TOPIC, json_dump)
                 print("Mode 10")
 
     pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
@@ -139,8 +173,10 @@ def load_page_game(win, font, events):
         win.blit(a, (150+spacing, 150 + offset))
         r = 0
         while (r < progress[index]):
-            pygame.draw.rect(win, (0, 0, 0), (320 + r *20+spacing, 150+ offset, 20, 30))
-            pygame.draw.rect(win, (217, 0, 30), (320 + r *20+2+spacing, 150+2+ offset, 20-4, 30-4))
+            pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
+                                              spacing, 150 + offset, 20, 30))
+            pygame.draw.rect(win, (217, 0, 30), (320 + r *
+                                                 20+2+spacing, 150+2 + offset, 20-4, 30-4))
             r += 1
         offset += 40
         if (index == 12):
@@ -196,5 +232,6 @@ def main():
 
 if __name__ == '__main__':
     pygame.init()
+    read_config_file(modes)
     main()
     pygame.quit()

@@ -1,0 +1,29 @@
+{
+  "modes": [
+    {
+      "name": "4 Questions",
+      "words_right": ["persona", "saber", "había", "sip"],
+      "words_wrong": ["perzona", "saver", "havía", "nop"],
+      "images": ["perso_icon.png", "saber.png", "perso_icon.png", "duck_icon.jpg"]
+    },
+    {
+      "name": "6 Questions",
+      "images": ["galleta.png", "saber.png"],
+      "words_right": ["galleta", "saber"],
+      "words_wrong": ["galletta", "saver"]
+    },
+    {
+      "name": "8 Questions",
+      "images": ["galleta.png", "saber.png"],
+      "words_right": ["galleta", "saber"],
+      "words_wrong": ["galletta", "saver"]
+    }
+  ],
+  "children_history": [
+    {
+      "name": "Manuel",
+      "most_fail_word": "",
+      "ranking": 123
+    }
+  ]
+}
