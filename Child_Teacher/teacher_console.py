@@ -110,40 +110,26 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
             # Change the current color of the input box.
             color = color_active if active else color_inactive
             # If the user clicked on the input_box rect.
+            send_to_app = [False, 0, 0]
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
-                current_window = WINDOWS['ON_GAME']
-                data = {
-                    "start": True,
-                    "mode": 4,
-                }
-                data['words_right'] = modes[0].words_right[0]
-                data['words_wrong'] = modes[0].words_wrong[0]
-
-                json_dump = json.dumps(data)
-                client.publish(PUBLISH_TOPIC, json_dump)
+                send_to_app = [True, 4, 0]
                 print("Mode 5")
             if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
-                current_window = WINDOWS['ON_GAME']
-                data = {
-                    "start": True,
-                    "mode": 6,
-                }
-                data['words_right'] = modes[1].words_right[0]
-                data['words_wrong'] = modes[1].words_wrong[0]
-                json_dump = json.dumps(data)
-                client.publish(PUBLISH_TOPIC, json_dump)
+                send_to_app = [True, 6, 1]
                 print("Mode 8")
             if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
+                send_to_app = [True, 8, 2]
+                print("Mode 10")
+            if send_to_app[0]:
                 current_window = WINDOWS['ON_GAME']
                 data = {
                     "start": True,
-                    "mode": 10,
+                    "mode": send_to_app[1],
                 }
-                data['words_right'] = modes[2].words_right[0]
-                data['words_wrong'] = modes[2].words_wrong[0]
+                data['words_right'] = modes[send_to_app[2]].words_right[0]
+                data['words_wrong'] = modes[send_to_app[2]].words_wrong[0]
                 json_dump = json.dumps(data)
                 client.publish(PUBLISH_TOPIC, json_dump)
-                print("Mode 10")
 
     pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
     offset = 0
@@ -227,8 +213,7 @@ def main():
         #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
         #     i += 100
         pygame.display.flip()
-        clock.tick(30)
-
+        clock.tick(100)
 
 if __name__ == '__main__':
     pygame.init()
