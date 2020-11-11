@@ -2,8 +2,8 @@
   "modes": [
     {
       "name": "4 Questions",
-      "words_right": ["persona", "saber", "había", "sip"],
-      "words_wrong": ["perzona", "saver", "havía", "nop"],
+      "words_right": ["persona", "saber", "había", "sip", "havía", "nop"],
+      "words_wrong": ["perzona", "saver", "havía", "nop", "havía", "nop"],
       "images": ["perso_icon.png", "saber.png", "perso_icon.png", "duck_icon.jpg"]
     },
     {
