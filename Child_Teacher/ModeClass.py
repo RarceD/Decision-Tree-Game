@@ -7,7 +7,7 @@ class Mode:
     def random_word(self):
         pass
     def print_itself(self):
-        print("Mode: "+ self.name)
+        print("Mode: "+ str(self.name))
         print(" -> Images: ", self.images)
         print(" -> Correct words: ", self.words_right)
         print(" -> Incorrect words: ", self.words_wrong)

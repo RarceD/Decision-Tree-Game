@@ -1,29 +1,63 @@
 {
   "modes": [
     {
-      "name": "4 Questions",
-      "words_right": ["persona", "saber", "había", "sip", "havía", "nop"],
-      "words_wrong": ["perzona", "saver", "havía", "nop", "havía", "nop"],
-      "images": ["perso_icon.png", "saber.png", "perso_icon.png", "duck_icon.jpg"]
+      "name": 4,
+      "words": ["galdiolo", "flor", "palmera", "bloso", "adrono", "furta", "tractor", "parque", "abarzar", "tornillo", "aporbar", "falda", "plamera"],
+      "correct_word": [false, true, true, false, false, false, true, true, false, true, false, true, false],
+      "images": [
+        "perso_icon.png",
+        "saber.png",
+        "perso_icon.png",
+        "perso_icon.png",
+        "duck_icon.jpg",
+        "perso_icon.png"
+      ]
     },
     {
-      "name": "6 Questions",
-      "images": ["galleta.png", "saber.png"],
-      "words_right": ["galleta", "saber"],
-      "words_wrong": ["galletta", "saver"]
+      "name": 6,
+      "words": ["galleta", "saver"],
+      "correct_word": [true, false],
+      "images": ["galleta.png", "saber.png"]
     },
     {
-      "name": "8 Questions",
-      "images": ["galleta.png", "saber.png"],
-      "words_right": ["galleta", "saber"],
-      "words_wrong": ["galletta", "saver"]
+      "name": 8,
+      "words": ["galleta", "saver"],
+      "correct_word": [true, false],
+      "images": ["galleta.png", "saber.png"]
     }
   ],
-  "children_history": [
+  "icon_child_sharable": {
+    "images": [
+      "icon1.png",
+      "icon2.png",
+      "icon3.png",
+      "icon4.png",
+      "icon5.png",
+      "icon6.png"
+    ]
+  },
+  "global_images": {
+    "game_name": "Nombre to guapo",
+    "game_logo": "ims.png"
+  },
+  "color_config": [
     {
-      "name": "Manuel",
-      "most_fail_word": "",
-      "ranking": 123
+      "teacher": {
+        "background": "(255,255,255)",
+        "mode_buttons": "(123,123,123)",
+        "children_background": "(255,255,255)",
+        "letters": "(255,255,255)",
+        "progress_bar": "(123,123,123)"
+      }
+    },
+    {
+      "children": {
+        "background": "(255,255,255)",
+        "enter_button": "(123,123,123)",
+        "circle_button_yes_no_button": "(123,123,123)",
+        "circle_question_number": "(123,123,123)",
+        "letters": "(255,255,255)"
+      }
     }
   ]
 }

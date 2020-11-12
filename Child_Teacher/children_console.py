@@ -20,7 +20,6 @@ current_question = 1
 timer_running = 0
 
 
-
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
     client = mqtt.Client("asdadf324wsd4asdf")  # create new instance
@@ -53,7 +52,7 @@ def on_message(client, userdata, message):
         m.words_right = parsed_json['words_right']
         m.words_wrong = parsed_json['words_wrong']
         mode = m
-        mode.print_itself()
+    mode.print_itself()
 
 
 def load_page_login(win, image, font, input_box, color, game_name, input_enter, events, client, color_active, color_inactive, active):
@@ -126,7 +125,7 @@ def load_page_waiting(win, font, image, events):
 
 
 def load_page_game(win, font, image_children,  image_game_logo, events, client):
-    global run, child_name, current_question, mode, timer_running, mode
+    global run, child_name, current_question, mode, timer_running, current_window
     win.fill((30, 30, 30))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
@@ -136,13 +135,15 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     color_letters = (163, 227, 255)
     txt_surface = font.render("Palabra / Frase / Audio", True, color_letters)
     win.blit(txt_surface, (300, 120))
-    txt_surface = font.render(mode.words_right[current_question-1], True, color_letters)
+    txt_surface = font.render(
+        mode.words_right[current_question-1], True, color_letters)
     win.blit(txt_surface, (400, 333))
 
     color_circle = (87, 154, 230)
     radio_cicle = 50
     circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_cicle)
-    circle_question = pygame.draw.circle(win, color_circle, (500, 600), radio_cicle)
+    circle_question = pygame.draw.circle(
+        win, color_circle, (500, 600), radio_cicle)
     circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_cicle)
 
     color_text = (0, 0, 0)
@@ -151,7 +152,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     win.blit(txt_surface, (100-offset, 300-offset))
     txt_surface = font.render("NO", True, color_text)
     win.blit(txt_surface, (900-offset, 300-offset))
-    txt_surface = font.render(str(current_question+1), True, color_text)
+    txt_surface = font.render(str(current_question), True, color_text)
     win.blit(txt_surface, (500-offset, 600-offset))
 
     # Child name and picture:
@@ -162,40 +163,70 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
         if event.type == pygame.QUIT:
             run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            action = 0 # I get the child response
-            children_solution_ok = False # The real child response to compare 
+            action = 0  # I get the child response
+            children_solution_ok = False  # The real child response to compare
+            response = False
             if circle_yes.collidepoint(event.pos):
-                print("Circle yes")
+                response = True
                 action = 1
             if circle_no.collidepoint(event.pos):
-                print("Circle no")
+                response = False
                 action = 2
-            #Check if is ok or not    
-            if action>0:
-                #Do I have to finish the game:
-                if (current_question < mode.name):
-                    current_question+=1
+            if action > 0:
+                # Check if is ok or not
+                puntuation = 10
+                # Calculate the punctiation: given current time to response and an unknown protocol
+                if (mode.words_wrong[current_question-1] == response):
+                    puntuation = calculate_punctuation(timer_running)
+                    print("the response is ok")
                 else:
-                    #Finish if the children have end successfully
-                    all_right= True
+                    puntuation = 0
+                    print("the response is NOT OK")
+
+                # I restart the timer for the next question:
+                timer_running = 0
+                # Publish the results:
+                msg = {
+                    "uuid": child_name,
+                    "question": str(current_question),
+                    "punctuation":str(puntuation)
+                }
+                json_dump = json.dumps(msg)
+                client.publish(PUBLISH_TOPIC, json_dump)
+
+                # Do I have to finish the game:
+                if (current_question < mode.name):
+                    current_question += 1
+                else:
+                    # Finish if the children have end successfully
+                    all_right = True
                     if (all_right):
-                        current_window = WINDOWS['LOGIN']
-                    #If not I return the children to the first fail
+                        current_window = WINDOWS['FINISH']
+                    # If not I return the children to the first fail
                     else:
                         pass
-                #Calculate the punctiation: given current time to response and an unknown protocol
-                puntuation = calculate_punctuation(timer_running)
-                #I restart the timer for the next question:
-                timer_running = 0
-                
-                msg = "{\"uuid\":\""+child_name+"\",\"question\":"+str(current_question)+"}"
-                client.publish(PUBLISH_TOPIC, msg)
-                print("Enter Press")
 
-def load_page_end(win):
-    pass
+
+def load_page_end(win, events, font, image_children):
+    global child_name, run
+    for event in events:
+        if event.type == pygame.QUIT:
+            run = False
+    txt_surface = font.render(child_name, True,  (163, 227, 255))
+    win.blit(txt_surface, (100, 700))
+    win.blit(image_children, (40, 700))
+
+
 def calculate_punctuation(time):
-    pass
+    # Start with 10 points and every 5 seconds it start to decrese -1
+    punctuation = 10
+    if time > 25:
+        return 5
+    while (time - 5 > 0):
+        punctuation -= 1
+        time-=5
+    return punctuation
+
 
 def main():
     global current_window, run, child_name, mode, timer_running
@@ -211,7 +242,7 @@ def main():
     color = color_inactive
     active = True
     child_name = ''
-    current_window = WINDOWS['LOGIN']
+    current_window = WINDOWS['FINISH']
     image = pygame.image.load(
         r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
     image = pygame.transform.scale(image, (50, 50))
@@ -220,6 +251,8 @@ def main():
     image_game_logo = pygame.transform.scale(image_game_logo, (100, 100))
     timer_update_screen = int(round(time.time()))
     refresh_time = 1
+    color_letters = (163, 227, 255)
+
     while run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
@@ -235,7 +268,9 @@ def main():
             load_page_game(win, font, image,
                            image_game_logo, pygame.event.get(), client)
         elif (current_window == WINDOWS['FINISH']):
-            win.fill((110, 220, 30))
+            if (len(child_name) == 0):
+                child_name = "Laura Lomez"
+            load_page_end(win,pygame.event.get() , font, image)
         # i = 0
         # while i < 1024:
         #     pygame.draw.line(win, (133, 128, 123), (i, 0),(i,1024), 1)

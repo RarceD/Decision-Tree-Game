@@ -23,8 +23,8 @@ def read_config_file(modes):
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
             modes.append(Mode(p['name']))
-            modes[index].words_right.append(p["words_right"])
-            modes[index].words_wrong.append(p["words_wrong"])
+            modes[index].words_right.append(p["words"])
+            modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
 
     for m in modes:
@@ -128,6 +128,8 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
                 }
                 data['words_right'] = modes[send_to_app[2]].words_right[0]
                 data['words_wrong'] = modes[send_to_app[2]].words_wrong[0]
+                data['images'] = modes[send_to_app[2]].images[0]
+                 
                 json_dump = json.dumps(data)
                 client.publish(PUBLISH_TOPIC, json_dump)
 
