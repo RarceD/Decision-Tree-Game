@@ -22,7 +22,7 @@ def read_config_file(modes):
     with open('input.json') as json_file:
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
-            modes.append(Mode(p['name']))
+            modes.append(Mode())
             modes[index].words_right.append(p["words"])
             modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
@@ -160,7 +160,7 @@ def load_page_game(win, font, events):
         a = font.render(c, True, (0x00, 0x00, 0x00))
         win.blit(a, (150+spacing, 150 + offset))
         r = 0
-        while (r < progress[index]):
+        while (r < int(progress[index])):
             pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
                                               spacing, 150 + offset, 20, 30))
             pygame.draw.rect(win, (217, 0, 30), (320 + r *

@@ -1,8 +1,9 @@
 import pygame
 import json
 import paho.mqtt.client as mqtt
-from ModeClass import Mode, Children
+from ModeClass import Mode, Children, LoadFile
 import time
+import random
 
 
 PUBLISH_TOPIC = 'TFG_B/children'
@@ -20,7 +21,8 @@ current_window = 1111
 mode = Mode()
 # The current status of the children, time, question, etc..
 children = Children()
-
+children.print_itself()
+parser = LoadFile('input.json')
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
@@ -48,7 +50,7 @@ def on_message(client, userdata, message):
     # I received the questions and save them:
     if (parsed_json['start']):
         current_window = WINDOWS['ON_GAME']
-        m = Mode("")
+        m = Mode()
         m.name = parsed_json['mode']
         m.images = parsed_json['images']
         m.words_right = parsed_json['words_right']
@@ -57,18 +59,22 @@ def on_message(client, userdata, message):
     mode.print_itself()
 
 
-def load_page_login(win, image, font, input_box, color, game_name, input_enter, events, client, color_active, color_inactive, active):
+def load_page_login(win, image, font, events, client):
     global current_window, WINDOWS, children
+    input_box = pygame.Rect(350, 500, 400, 50)
+    input_enter = pygame.Rect(450, 600, 140, 50)
+    game_name = pygame.Rect(200, 100, 600, 300)
+
     win.fill((30, 30, 30))
     # Render the current text.
-    txt_surface = font.render(children.name, True, color)
+    txt_surface = font.render(children.name, True, (123,123,3))
     # Resize the box if the text is too long.
     width = max(200, txt_surface.get_width()+10)
     input_box.w = width
     # Blit the text.
     win.blit(txt_surface, (input_box.x+5, input_box.y+5))
     # Blit the input_box rect.
-    pygame.draw.rect(win, color, input_box, 2)
+    pygame.draw.rect(win, (2,234,34), input_box, 2)
     pygame.draw.rect(win, (123, 0, 0), input_enter)
 
     pygame.draw.rect(win, (255, 255, 255), game_name)
@@ -81,19 +87,12 @@ def load_page_login(win, image, font, input_box, color, game_name, input_enter, 
         if event.type == pygame.QUIT:
             children.run = False
         if event.type == pygame.MOUSEBUTTONDOWN:
-            print("mouse button down")
-            # If the user clicked on the input_box rect.
-
-            # else:
-            #     active = False
-            # color = color_active if not active else color_inactive
             if input_enter.collidepoint(event.pos):
                 if (len(children.name) != 0):
                     current_window = WINDOWS['WAITING_TEACHER']
                     msg = "{\"uuid\":\""+children.name+"\",\"question\":0}"
                     client.publish(PUBLISH_TOPIC, msg)
                     print("Enter Press")
-            # Change the current color of the input box.
         if event.type == pygame.KEYDOWN:
             if True:
                 if event.key == pygame.K_RETURN:
@@ -126,7 +125,7 @@ def load_page_waiting(win, font, image, events):
             children.run = False
 
 
-def load_page_game(win, font, image_children,  image_game_logo, events, client):
+def load_page_game(win, font, image_children,  image_game_logo, events, client, word_image):
     global children, mode, current_window
     win.fill((30, 30, 30))
     win.blit(image_game_logo, (870, 30))
@@ -141,8 +140,9 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     win.blit(txt_surface, (250, 120))
     txt_surface = font.render(
         mode.words_right[children.current_question-1], True, color_letters)
+    # Each word has a diferent image:
     win.blit(txt_surface, (320, 330))
-    win.blit(image_game_logo, (600, 320))
+    win.blit(word_image, (600, 320))
 
     color_circle = (87, 154, 230)
     radio_cicle = 50
@@ -235,33 +235,26 @@ def load_page_end(win, events, font, image_children, image_game_logo):
 
 def main():
     global current_window, children, mode
-    client = connect_mqtt()
+
     win = pygame.display.set_mode((1024, 768))
     font = pygame.font.Font(None, 52)
     clock = pygame.time.Clock()
-    input_box = pygame.Rect(350, 500, 400, 50)
-    input_enter = pygame.Rect(450, 600, 140, 50)
-    game_name = pygame.Rect(200, 100, 600, 300)
-    color_inactive = pygame.Color('lightskyblue3')
-    color_active = pygame.Color('dodgerblue2')
-    color = color_inactive
-    active = True
+    # Start the game on LOGIN:
     current_window = WINDOWS['LOGIN']
-    image = pygame.image.load(
-        r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
+    # The game icon of the children:
+    image = pygame.image.load('icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
     image = pygame.transform.scale(image, (50, 50))
-    image_game_logo = pygame.image.load(
-        r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\game_logo.png')
+    # The global game logo
+    image_game_logo = pygame.image.load('images/' +parser.game_logo)
     image_game_logo = pygame.transform.scale(image_game_logo, (100, 100))
+
     timer_update_screen = int(round(time.time()))
-    refresh_time = 1
-    color_letters = (163, 227, 255)
+    
 
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
-            load_page_login(win,  image, font,  input_box, color,
-                            game_name, input_enter, pygame.event.get(), client, color_active, color_inactive, active)
+            load_page_login(win,  image, font,pygame.event.get(), client)
         elif (current_window == WINDOWS['WAITING_TEACHER']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
@@ -269,8 +262,10 @@ def main():
         elif (current_window == WINDOWS['ON_GAME']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
+            image_word = pygame.image.load('images/' +mode.images[children.current_question-1])
+            image_word = pygame.transform.scale(image_word, (100, 100))
             load_page_game(win, font, image,
-                           image_game_logo, pygame.event.get(), client)
+                           image_game_logo, pygame.event.get(), client, image_word)
         elif (current_window == WINDOWS['FINISH']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
@@ -280,7 +275,7 @@ def main():
             pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
             pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
             i += 100
-        if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= refresh_time):
+        if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
             children.timer_running += 1
             print(children.timer_running)
@@ -291,5 +286,6 @@ def main():
 
 if __name__ == '__main__':
     pygame.init()
+    client = connect_mqtt()
     main()
     pygame.quit()

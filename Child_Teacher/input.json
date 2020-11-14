@@ -2,13 +2,41 @@
   "modes": [
     {
       "name": 4,
-      "words": ["galdiolo", "flor", "palmera", "bloso", "adrono", "furta", "tractor", "parque", "abarzar", "tornillo", "aporbar", "falda", "plamera"],
-      "correct_word": [false, true, true, false, false, false, true, true, false, true, false, true, false],
+      "words": [
+        "galdiolo",
+        "flor",
+        "palmera",
+        "bloso",
+        "adrono",
+        "furta",
+        "tractor",
+        "parque",
+        "abarzar",
+        "tornillo",
+        "aporbar",
+        "falda",
+        "plamera"
+      ],
+      "correct_word": [
+        false,
+        true,
+        true,
+        false,
+        false,
+        false,
+        true,
+        true,
+        false,
+        true,
+        false,
+        true,
+        false
+      ],
       "images": [
-        "perso_icon.png",
+        "person_icon.png",
         "saber.png",
-        "perso_icon.png",
-        "perso_icon.png",
+        "duck_icon.jpg",
+        "game_logo.png",
         "duck_icon.jpg",
         "perso_icon.png"
       ]
@@ -26,38 +54,31 @@
       "images": ["galleta.png", "saber.png"]
     }
   ],
-  "icon_child_sharable": {
-    "images": [
-      "icon1.png",
-      "icon2.png",
-      "icon3.png",
-      "icon4.png",
-      "icon5.png",
-      "icon6.png"
-    ]
-  },
+  "icon_child_sharable": [
+    "pinguin.png",
+    "jellyfish.png",
+    "morse.png",
+    "frog.png",
+    "cow.png"
+  ],
   "global_images": {
     "game_name": "Nombre to guapo",
-    "game_logo": "ims.png"
+    "game_logo": "game_logo.png"
   },
-  "color_config": [
-    {
-      "teacher": {
-        "background": "(255,255,255)",
-        "mode_buttons": "(123,123,123)",
-        "children_background": "(255,255,255)",
-        "letters": "(255,255,255)",
-        "progress_bar": "(123,123,123)"
-      }
-    },
-    {
-      "children": {
-        "background": "(255,255,255)",
-        "enter_button": "(123,123,123)",
-        "circle_button_yes_no_button": "(123,123,123)",
-        "circle_question_number": "(123,123,123)",
-        "letters": "(255,255,255)"
-      }
-    }
-  ]
+  "color_config_teacher": {
+    "background": "(255,255,255)",
+    "mode_buttons": "(123,123,123)",
+    "children_background": "(255,255,255)",
+    "letters": "(255,255,255)",
+    "progress_bar": "(123,123,123)"
+  },
+  "color_config_children": {
+    "background": "(255,255,255)",
+    "enter_button": "(123,123,123)",
+    "circle_button_yes_no_button": "(123,123,123)",
+    "circle_question_number": "(123,123,123)",
+    "letters": "(255,255,255)",
+    "font_primary": "fantasia.sd",
+    "font_secundary": "fsdfa.sd"
+  }
 }
