@@ -13,4 +13,13 @@ class Mode:
         print(" -> Incorrect words: ", self.words_wrong)
 
 
+class Children:
+    def __init__(self):
+        self.name = ""
+        self.current_question = 0
+        self.run = True
+        self.timer_running = 0
+    def print_itself(self):
+        print(self.name, self.current_question, self.run)
+
 

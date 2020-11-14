@@ -1,7 +1,7 @@
 import pygame
 import json
 import paho.mqtt.client as mqtt
-from ModeClass import Mode
+from ModeClass import Mode, Children
 import time
 
 WINDOWS = {
@@ -14,6 +14,8 @@ current_window = 1111
 PUBLISH_TOPIC = 'TFG_B/children'
 LISTEN_TOPIC = 'TFG_B/teacher'
 mode = Mode("unknown")
+
+children = Children()
 run = True
 child_name = ""
 current_question = 1
@@ -130,14 +132,17 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (200, 50, 600, 150), 2)
-    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (300, 300, 400, 100), 2)
+    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (250, 300, 250, 100), 2)
+    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (550, 300, 200, 150), 2)
 
     color_letters = (163, 227, 255)
-    txt_surface = font.render("Palabra / Frase / Audio", True, color_letters)
-    win.blit(txt_surface, (300, 120))
+    txt_surface = font.render("¿ Son correctas las palabras ?", True, color_letters)
+    win.blit(txt_surface, (250, 120))
     txt_surface = font.render(
         mode.words_right[current_question-1], True, color_letters)
-    win.blit(txt_surface, (400, 333))
+    win.blit(txt_surface, (320, 330))
+    win.blit(image_game_logo, (600, 320))
+
 
     color_circle = (87, 154, 230)
     radio_cicle = 50
@@ -242,7 +247,7 @@ def main():
     color = color_inactive
     active = True
     child_name = ''
-    current_window = WINDOWS['FINISH']
+    current_window = WINDOWS['LOGIN']
     image = pygame.image.load(
         r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
     image = pygame.transform.scale(image, (50, 50))
@@ -271,11 +276,11 @@ def main():
             if (len(child_name) == 0):
                 child_name = "Laura Lomez"
             load_page_end(win,pygame.event.get() , font, image)
-        # i = 0
-        # while i < 1024:
-        #     pygame.draw.line(win, (133, 128, 123), (i, 0),(i,1024), 1)
-        #     pygame.draw.line(win, (133, 128, 123), (0, i),(1024,i), 1)
-        #     i += 100
+        i = 0
+        while i < 1024:
+            # pygame.draw.line(win, (133, 128, 123), (i, 0),(i,1024), 1)
+            # pygame.draw.line(win, (133, 128, 123), (0, i),(1024,i), 1)
+            i += 100
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= refresh_time):
             timer_update_screen = int(round(time.time()))
             timer_running += 1
