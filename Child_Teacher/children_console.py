@@ -145,7 +145,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
     win.blit(word_image, (600, 320))
 
     color_circle = (87, 154, 230)
-    radio_cicle = 50
+    radio_cicle = 80
     circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_cicle)
     circle_question = pygame.draw.circle(
         win, color_circle, (500, 600), radio_cicle)

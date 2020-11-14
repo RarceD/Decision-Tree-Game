@@ -13,12 +13,21 @@ WINDOWS = {
     'ON_GAME': 1,
     'FINISH': 3,
 }
+parser = {
+    "game_name": "Nombre to guapo",
+    "game_logo": "game_logo.png",
+    "background": "",
+    "mode_buttons": "",
+    "children_background": "",
+    "letters": "",
+    "progress_bar": ""
+}
 current_window = 1111
 run = True
 modes = []
 
 
-def read_config_file(modes):
+def read_config_file(modes, parser):
     with open('input.json') as json_file:
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
@@ -26,7 +35,13 @@ def read_config_file(modes):
             modes[index].words_right.append(p["words"])
             modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
-
+            parser['game_name'] = data['global_images']['game_name']
+        parser['game_logo'] = data['global_images']['game_logo']
+        parser['background'] = data['color_config_teacher']['background']
+        parser['mode_buttons'] = data['color_config_teacher']['mode_buttons']
+        parser['children_background'] = data['color_config_teacher']['children_background']
+        parser['letters'] = data['color_config_teacher']['letters']
+        parser['progress_bar'] = data['color_config_teacher']['progress_bar']
     for m in modes:
         m.print_itself()
 
@@ -72,14 +87,10 @@ def on_message(client, userdata, message):
     print(childrens)
     print(progress)
 
-    #     # print(parsed_json['esp'])
-    #     # Get the distance and the uuid of the beacon:
-    #     beacon_distance = float(parsed_json['beacon'][index]['distance'])
-    #     beacon_uuid = str(parsed_json['beacon'][index]['uuid'])
 
-
-def load_page_waitting_child(win, font, child_name, input_box, color, game_name, input_enter, events, client, active, color_active, color_inactive):
+def load_page_waitting_child(win, font, events, client):
     global run, current_window, childrens, progress, PUBLISH_TOPIC, modes
+
     win.fill((30, 30, 30))
     space_box = 200
     pygame.draw.rect(win, (255, 255, 255), (700, 100, 200, 100))
@@ -97,19 +108,8 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
     for event in events:
         if event.type == pygame.QUIT:
             run = False
-        if event.type == pygame.KEYDOWN:
-            if active:
-                if event.key == pygame.K_RETURN:
-                    print(child_name)
-                    child_name = ''
-                elif event.key == pygame.K_BACKSPACE:
-                    child_name = child_name[:-1]
-                else:
-                    child_name += event.unicode
         if event.type == pygame.MOUSEBUTTONDOWN:
-            # Change the current color of the input box.
-            color = color_active if active else color_inactive
-            # If the user clicked on the input_box rect.
+            # If the user clicked on the  rect.
             send_to_app = [False, 0, 0]
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 4, 0]
@@ -129,7 +129,7 @@ def load_page_waitting_child(win, font, child_name, input_box, color, game_name,
                 data['words_right'] = modes[send_to_app[2]].words_right[0]
                 data['words_wrong'] = modes[send_to_app[2]].words_wrong[0]
                 data['images'] = modes[send_to_app[2]].images[0]
-                 
+
                 json_dump = json.dumps(data)
                 client.publish(PUBLISH_TOPIC, json_dump)
 
@@ -183,28 +183,19 @@ def load_page_game(win, font, events):
 
 
 def main():
-    global current_window, run, childrens, progress
-    client = connect_mqtt()
+    global current_window, run, childrens, progress, parser
+
     win = pygame.display.set_mode((1024, 768))
     font = pygame.font.Font(None, 32)
     clock = pygame.time.Clock()
-    input_box = pygame.Rect(350, 500, 400, 50)
-    input_enter = pygame.Rect(700, 100, 200, 100)
-    game_name = pygame.Rect(200, 100, 600, 300)
-    color_inactive = pygame.Color('lightskyblue3')
-    color_active = pygame.Color('dodgerblue2')
-    color = color_inactive
-    active = False
-    child_name = ''
     current_window = WINDOWS['WAITING_CHILDRENS']
-    image = pygame.image.load(
-        r'C:\Users\Tecnica2\Desktop\work\Decision-Tree-Game\Child_Teacher\images\duck_icon.jpg')
-    image = pygame.transform.scale(image, (50, 50))
 
+    image = pygame.image.load('images/' +parser['game_logo'])
+    image = pygame.transform.scale(image, (50, 50))
+    
     while run:
         if current_window == WINDOWS['WAITING_CHILDRENS']:
-            load_page_waitting_child(win, font, child_name,
-                                     input_box, color, game_name, input_enter, pygame.event.get(), client,  active, color_active, color_inactive)
+            load_page_waitting_child(win, font, pygame.event.get(), client)
         elif current_window == WINDOWS['ON_GAME']:
             load_page_game(win, font, pygame.event.get())
         elif current_window == WINDOWS['FINISH']:
@@ -217,8 +208,10 @@ def main():
         pygame.display.flip()
         clock.tick(100)
 
+
 if __name__ == '__main__':
     pygame.init()
-    read_config_file(modes)
+    client = connect_mqtt()
+    read_config_file(modes, parser)
     main()
     pygame.quit()
