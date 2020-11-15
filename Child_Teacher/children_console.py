@@ -23,8 +23,8 @@ mode = Mode()
 children = Children()
 children.print_itself()
 parser = LoadFile('input.json')
-modes=[]
- 
+modes = []
+
 with open('input.json') as json_file:
     data = json.load(json_file)
     for i in range(0, 3):
@@ -40,7 +40,6 @@ with open('input.json') as json_file:
     for m in modes:
         m.print_itself()
 
-        
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
@@ -66,14 +65,14 @@ def on_message(client, userdata, message):
     # print("message received: ", msg)
     parsed_json = json.loads(msg)
     # I received the questions and save them:
-    print (parsed_json)
+    print(parsed_json)
     if (parsed_json['start']):
         current_window = WINDOWS['ON_GAME']
         max_question_number = parsed_json['mode']
-        print (max_question_number)
+        print(max_question_number)
         if (max_question_number == 4):
             mode = modes[0]
-        elif (max_question_number ==  6):
+        elif (max_question_number == 6):
             mode = modes[1]
         else:
             mode = modes[2]
@@ -87,7 +86,7 @@ def on_message(client, userdata, message):
     random.shuffle(mode.words_wrong)
     # mode.print_itself()
 
-    
+
 def load_page_login(win, image, font, events, client):
     global current_window, WINDOWS, children
     input_box = pygame.Rect(350, 500, 400, 50)
@@ -96,14 +95,14 @@ def load_page_login(win, image, font, events, client):
 
     win.fill((30, 30, 30))
     # Render the current text.
-    txt_surface = font.render(children.name, True, (123,123,3))
+    txt_surface = font.render(children.name, True, (123, 123, 3))
     # Resize the box if the text is too long.
     width = max(200, txt_surface.get_width()+10)
     input_box.w = width
     # Blit the text.
     win.blit(txt_surface, (input_box.x+5, input_box.y+5))
     # Blit the input_box rect.
-    pygame.draw.rect(win, (2,234,34), input_box, 2)
+    pygame.draw.rect(win, (2, 234, 34), input_box, 2)
     pygame.draw.rect(win, (123, 0, 0), input_enter)
 
     pygame.draw.rect(win, (255, 255, 255), game_name)
@@ -232,28 +231,57 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
                 # Do I have to finish the game:
                 if (children.current_question < mode.name):
                     children.current_question += 1
+                    print("increase the current question")
+
                 else:
+                    print("I finish the game")
                     # Finish if the children have end successfully
+                    current_window = WINDOWS['FINISH']
                     all_right = True
                     if (all_right):
-                        current_window = WINDOWS['FINISH']
-                    # If not I return the children to the first fail
+                        pass
+                        # If not I return the children to the first fail
                     else:
                         pass
 
 
-def load_page_end(win, events, font, image_children, image_game_logo):
+def load_page_end(win, events, font, image_children, image_game_logo, image_tree):
     global children, mode
-    for event in events:
-        if event.type == pygame.QUIT:
-            children.run = False
+    win.fill((30, 30, 30))
+    input_enter = pygame.Rect(750, 600, 140, 50)
     # Add the name of the children
     txt_surface = font.render(children.name, True,  (163, 227, 255))
     win.blit(txt_surface, (100, 700))
     win.blit(image_children, (40, 700))
     win.blit(image_game_logo, (870, 30))
+    win.blit(image_tree, (150, 100))
+    pygame.draw.rect(win, (123, 0, 0), input_enter)
 
+    txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
+    win.blit(txt_game_name, (760, 610))
+
+    for event in events:
+        if event.type == pygame.QUIT:
+            children.run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if input_enter.collidepoint(event.pos):
+                print("Enter Press")
+
+    color_circle_wrong = (245, 117, 66)
+    color_circle_right = (38, 106, 189)
+    radio_cicle = 20
     # Draw the tree
+    offset = 0
+    color = color_circle_wrong
+    for i in range(0, 5):
+        circle_yes = pygame.draw.circle(
+            win, color, (350 + offset, 240 + int(offset/1.5)), radio_cicle)
+        offset += 40
+        if i % 2 == 0:
+            color = color_circle_right
+        else:
+            color = color_circle_wrong
+
     if (mode.name == 4):
         pass
     elif (mode.name == 6):
@@ -271,19 +299,21 @@ def main():
     # Start the game on LOGIN:
     current_window = WINDOWS['LOGIN']
     # The game icon of the children:
-    image = pygame.image.load('icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
+    image = pygame.image.load(
+        'icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
     image = pygame.transform.scale(image, (50, 50))
     # The global game logo
-    image_game_logo = pygame.image.load('images/' +parser.game_logo)
+    image_game_logo = pygame.image.load('images/' + parser.game_logo)
     image_game_logo = pygame.transform.scale(image_game_logo, (100, 100))
 
+    image_tree = pygame.image.load('images/' + 'tree.png')
+    image_tree = pygame.transform.scale(image_tree, (600, 600))
     timer_update_screen = int(round(time.time()))
-    
 
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
-            load_page_login(win,  image, font,pygame.event.get(), client)
+            load_page_login(win,  image, font, pygame.event.get(), client)
         elif (current_window == WINDOWS['WAITING_TEACHER']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
@@ -291,23 +321,27 @@ def main():
         elif (current_window == WINDOWS['ON_GAME']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
-            image_word = pygame.image.load('images/' +mode.images[children.current_question-1])
+            image_word = pygame.image.load(
+                'images/' + mode.images[children.current_question-1])
             image_word = pygame.transform.scale(image_word, (100, 100))
             load_page_game(win, font, image,
                            image_game_logo, pygame.event.get(), client, image_word)
         elif (current_window == WINDOWS['FINISH']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
-            load_page_end(win, pygame.event.get(), font, image, image_game_logo)
-        i = 0
-        while i < 1024:
-            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-            i += 100
+            load_page_end(win, pygame.event.get(),
+                          font, image, image_game_logo, image_tree)
+
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
+
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
             children.timer_running += 1
-            print(children.timer_running)
+            # print(children.timer_running)
 
         pygame.display.flip()
         clock.tick(30)

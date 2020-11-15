@@ -32,10 +32,10 @@ def read_config_file(modes, parser):
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
             modes.append(Mode())
-            
+            modes[index].words_right.append(p["words"])
             modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
-            parser['game_name'] = data['global_images']['game_name']
+        parser['game_name'] = data['global_images']['game_name']
         parser['game_logo'] = data['global_images']['game_logo']
         parser['background'] = data['color_config_teacher']['background']
         parser['mode_buttons'] = data['color_config_teacher']['mode_buttons']
