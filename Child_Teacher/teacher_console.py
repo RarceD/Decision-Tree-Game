@@ -32,7 +32,7 @@ def read_config_file(modes, parser):
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
             modes.append(Mode())
-            modes[index].words_right.append(p["words"])
+            
             modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
             parser['game_name'] = data['global_images']['game_name']
@@ -190,9 +190,9 @@ def main():
     clock = pygame.time.Clock()
     current_window = WINDOWS['WAITING_CHILDRENS']
 
-    image = pygame.image.load('images/' +parser['game_logo'])
+    image = pygame.image.load('images/' + parser['game_logo'])
     image = pygame.transform.scale(image, (50, 50))
-    
+
     while run:
         if current_window == WINDOWS['WAITING_CHILDRENS']:
             load_page_waitting_child(win, font, pygame.event.get(), client)

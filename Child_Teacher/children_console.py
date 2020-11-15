@@ -23,6 +23,24 @@ mode = Mode()
 children = Children()
 children.print_itself()
 parser = LoadFile('input.json')
+modes=[]
+ 
+with open('input.json') as json_file:
+    data = json.load(json_file)
+    for i in range(0, 3):
+        modes.append(Mode())
+        modes[i].name = data['modes'][i]["name"]
+        for w in data['modes'][i]["words"]:
+            modes[i].words_right.append(w)
+        for w in data['modes'][i]["correct_word"]:
+            modes[i].words_wrong.append(w)
+        for w in data['modes'][i]["images"]:
+            modes[i].images.append(w)
+
+    for m in modes:
+        m.print_itself()
+
+        
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
@@ -43,22 +61,33 @@ def on_message(client, userdata, message):
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
-    global current_window, WINDOWS, mode
+    global current_window, WINDOWS, mode, modes
     msg = str(message.payload.decode("utf-8"))
-    print("message received: ", msg)
+    # print("message received: ", msg)
     parsed_json = json.loads(msg)
     # I received the questions and save them:
+    print (parsed_json)
     if (parsed_json['start']):
         current_window = WINDOWS['ON_GAME']
-        m = Mode()
-        m.name = parsed_json['mode']
-        m.images = parsed_json['images']
-        m.words_right = parsed_json['words_right']
-        m.words_wrong = parsed_json['words_wrong']
-        mode = m
-    mode.print_itself()
+        max_question_number = parsed_json['mode']
+        print (max_question_number)
+        if (max_question_number == 4):
+            mode = modes[0]
+        elif (max_question_number ==  6):
+            mode = modes[1]
+        else:
+            mode = modes[2]
+    # print("The selected mode is:" )
+    # mode.print_itself()
+    # I untidy the words in order to not repeat between childs:
+    ran_int_seed = random.randint(0, 25)
+    random.seed(ran_int_seed)
+    random.shuffle(mode.words_right)
+    random.seed(ran_int_seed)
+    random.shuffle(mode.words_wrong)
+    # mode.print_itself()
 
-
+    
 def load_page_login(win, image, font, events, client):
     global current_window, WINDOWS, children
     input_box = pygame.Rect(350, 500, 400, 50)
