@@ -75,10 +75,12 @@
   "color_config_children": {
     "background": "(255,255,255)",
     "enter_button": "(123,123,123)",
-    "circle_button_yes_no_button": "(123,123,123)",
+    "circle_button_yes_no_button": "(249,223,23)",
     "circle_question_number": "(123,123,123)",
     "letters": "(255,255,255)",
     "font_primary": "fantasia.sd",
-    "font_secundary": "fsdfa.sd"
+    "font_secundary": "fsdfa.sd",
+    "waiting_children_font": "Espera a que los niños hagan cosas",
+    "question_text_2": "Esc orrenta esta palabra"
   }
 }
