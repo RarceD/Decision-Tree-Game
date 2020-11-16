@@ -38,12 +38,27 @@ def read_config_file(modes, parser):
         parser['game_name'] = data['global_images']['game_name']
         parser['game_logo'] = data['global_images']['game_logo']
         parser['background'] = data['color_config_teacher']['background']
-        parser['mode_buttons'] = data['color_config_teacher']['mode_buttons']
+        parser['background'] = tuple(
+            map(int, str(parser['background'])[1:-1].split(',')))
+
         parser['children_background'] = data['color_config_teacher']['children_background']
+        parser['children_background'] = tuple(
+            map(int, str(parser['children_background'])[1:-1].split(',')))
+
+        parser['mode_buttons'] = data['color_config_teacher']['mode_buttons']
+        parser['mode_buttons'] = tuple(
+            map(int, str(parser['mode_buttons'])[1:-1].split(',')))
+
         parser['letters'] = data['color_config_teacher']['letters']
+        parser['letters'] = tuple(
+            map(int, str(parser['letters'])[1:-1].split(',')))
+
         parser['progress_bar'] = data['color_config_teacher']['progress_bar']
+        parser['progress_bar'] = tuple(
+            map(int, str(parser['progress_bar'])[1:-1].split(',')))
     for m in modes:
         m.print_itself()
+    print (parser)
 
 
 def connect_mqtt():
@@ -88,21 +103,26 @@ def on_message(client, userdata, message):
     print(progress)
 
 
-def load_page_waitting_child(win, font, events, client):
-    global run, current_window, childrens, progress, PUBLISH_TOPIC, modes
+def load_page_waitting_child(win, font, events, client, image):
+    global run, current_window, childrens, progress, PUBLISH_TOPIC, modes,  parser
 
-    win.fill((30, 30, 30))
+    win.fill(parser['background'])
+    pygame.draw.rect(win, parser['children_background'], (100, 100, 500, 600))
+    txt_game_name = font.render(parser['game_name'], True,  (240,240,240))
+    win.blit(txt_game_name, (700, 50))
+    win.blit(image, (900, 25))
+
     space_box = 200
-    pygame.draw.rect(win, (255, 255, 255), (700, 100, 200, 100))
-    txt_game_name = font.render("4 WORDS", True,  (0x00, 0x00, 0x00))
+    pygame.draw.rect(win, parser['mode_buttons'], (700, 100, 200, 100))
+    txt_game_name = font.render("4 WORDS", True,  parser['letters'])
     win.blit(txt_game_name, (750, 140))
 
-    pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box, 200, 100))
-    txt_game_name = font.render("6 WORDS", True,  (0x00, 0x00, 0x00))
+    pygame.draw.rect(win, parser['mode_buttons'], (700, 100 + space_box, 200, 100))
+    txt_game_name = font.render("6 WORDS", True,  parser['letters'])
     win.blit(txt_game_name, (750, 140 + space_box))
 
-    pygame.draw.rect(win, (255, 255, 255), (700, 100 + space_box*2, 200, 100))
-    txt_game_name = font.render("8 WORDS", True,  (0x00, 0x00, 0x00))
+    pygame.draw.rect(win, parser['mode_buttons'], (700, 100 + space_box*2, 200, 100))
+    txt_game_name = font.render("8 WORDS", True,  parser['letters'])
     win.blit(txt_game_name, (750, 140 + space_box*2))
 
     for event in events:
@@ -133,7 +153,6 @@ def load_page_waitting_child(win, font, events, client):
                 json_dump = json.dumps(data)
                 client.publish(PUBLISH_TOPIC, json_dump)
 
-    pygame.draw.rect(win, (181, 255, 255), (100, 100, 500, 600))
     offset = 0
     spacing = 0
     for index, c in enumerate(childrens):
@@ -148,22 +167,22 @@ def load_page_waitting_child(win, font, events, client):
     # win.blit(txt_game_name, (350, 220))
 
 
-def load_page_game(win, font, events):
+def load_page_game(win, font, events, image):
     global run, childrens, progress
-    win.fill((30, 30, 30))
+    win.fill(parser['background'])
 
-    # THe list of children
-    pygame.draw.rect(win, (181, 255, 255), (100, 100, 700, 600))
+    # The list of childrens:
+    pygame.draw.rect(win, parser['children_background'], (50, 100, 800, 600))
     offset = 0
     spacing = 0
     for index, c in enumerate(childrens):
-        a = font.render(c, True, (0x00, 0x00, 0x00))
-        win.blit(a, (150+spacing, 150 + offset))
+        a = font.render(c, True, parser['letters'])
+        win.blit(a, (100+spacing, 150 + offset))
         r = 0
         while (r < int(progress[index])):
             pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
                                               spacing, 150 + offset, 20, 30))
-            pygame.draw.rect(win, (217, 0, 30), (320 + r *
+            pygame.draw.rect(win, parser['progress_bar'] , (320 + r *
                                                  20+2+spacing, 150+2 + offset, 20-4, 30-4))
             r += 1
         offset += 40
@@ -171,11 +190,11 @@ def load_page_game(win, font, events):
             offset = 0
             spacing = 250
     offset = 0
-    # for index, p in enumerate(progress):
-    #     while (offset < p):
-    #         pygame.draw.rect(win, (0, 0, 0), (320 + offset *20, 150, 20, 30))
-    #         pygame.draw.rect(win, (217, 0, 30), (320 + offset *20+2, 150+2, 20-4, 30-4))
-    #         offset += 1
+    for index, p in enumerate(progress):
+        while (offset < p):
+            pygame.draw.rect(win, (0, 0, 0), (320 + offset *20, 150, 20, 30))
+            pygame.draw.rect(win,parser['progress_bar'], (320 + offset *20+2, 150+2, 20-4, 30-4))
+            offset += 1
 
     for event in events:
         if event.type == pygame.QUIT:
@@ -193,18 +212,19 @@ def main():
     image = pygame.image.load('images/' + parser['game_logo'])
     image = pygame.transform.scale(image, (50, 50))
 
+
     while run:
         if current_window == WINDOWS['WAITING_CHILDRENS']:
-            load_page_waitting_child(win, font, pygame.event.get(), client)
+            load_page_waitting_child(win, font, pygame.event.get(), client, image)
         elif current_window == WINDOWS['ON_GAME']:
-            load_page_game(win, font, pygame.event.get())
+            load_page_game(win, font, pygame.event.get(), image)
         elif current_window == WINDOWS['FINISH']:
             load_page_game(win, font)
-        # i = 0
-        # while i < 1024:
-        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-        #     i += 100
+        i = 0
+        while i < 1024:
+            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+            i += 100
         pygame.display.flip()
         clock.tick(100)
 

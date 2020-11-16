@@ -66,11 +66,11 @@
     "game_logo": "game_logo.png"
   },
   "color_config_teacher": {
-    "background": "(255,255,255)",
-    "mode_buttons": "(123,123,123)",
-    "children_background": "(255,255,255)",
-    "letters": "(255,255,255)",
-    "progress_bar": "(123,123,123)"
+    "background": "(49, 49, 79)",
+    "children_background": "(159, 159, 237)",
+    "mode_buttons": "(222, 255, 251)",
+    "letters": "(61, 2, 12)",
+    "progress_bar": "(87, 3, 135)"
   },
   "color_config_children": {
     "background": "(255,255,255)",
