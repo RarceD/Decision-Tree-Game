@@ -155,7 +155,7 @@ def load_page_waiting(win, font, image, events):
 
 def load_page_game(win, font, image_children,  image_game_logo, events, client, word_image):
     global children, mode, current_window
-    win.fill((30, 30, 30))
+    win.fill(parser.background)
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
@@ -173,11 +173,11 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
     win.blit(word_image, (600, 320))
 
     color_circle = parser.circle_button_yes_no_button
-    radio_cicle = 80
-    circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_cicle)
+    radio_circle = parser.radio_circle
+    circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_circle)
     circle_question = pygame.draw.circle(
-        win, parser.question_number, (500, 600), radio_cicle)
-    circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_cicle)
+        win, parser.circle_question_number, (500, 600), radio_circle)
+    circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_circle)
 
     color_text = parser.letters_color
     offset = 17
@@ -269,13 +269,13 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
 
     color_circle_wrong = parser.color_circle_wrong
     color_circle_right = parser.color_circle_right
-    radio_cicle = parser.radio_cicle
+    radio_circle = 10
     # Draw the tree
     offset = 0
     color = color_circle_wrong
     for i in range(0, 5):
         circle_yes = pygame.draw.circle(
-            win, color, (350 + offset, 240 + int(offset/1.5)), radio_cicle)
+            win, color, (350 + offset, 240 + int(offset/1.5)), radio_circle)
         offset += 40
         if i % 2 == 0:
             color = color_circle_right

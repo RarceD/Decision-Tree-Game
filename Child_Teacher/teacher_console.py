@@ -2,6 +2,7 @@ import pygame
 import json
 import paho.mqtt.client as mqtt
 from ModeClass import Mode
+import random
 
 PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
@@ -14,8 +15,8 @@ WINDOWS = {
     'FINISH': 3,
 }
 parser = {
-    "game_name": "Nombre to guapo",
-    "game_logo": "game_logo.png",
+    "game_name": "",
+    "game_logo": "",
     "background": "",
     "mode_buttons": "",
     "children_background": "",
@@ -25,7 +26,13 @@ parser = {
 current_window = 1111
 run = True
 modes = []
-
+for i in range(0,20):
+    childrens.append('Bea Puente')
+    progress.append(random.randint(0,8))
+childrens.append('Rubén Arce')
+progress.append(1)
+childrens.append('Ubu Ventajas')
+progress.append(0)
 
 def read_config_file(modes, parser):
     with open('input.json') as json_file:
@@ -172,7 +179,7 @@ def load_page_game(win, font, events, image):
     win.fill(parser['background'])
 
     # The list of childrens:
-    pygame.draw.rect(win, parser['children_background'], (50, 100, 800, 600))
+    pygame.draw.rect(win, parser['children_background'], (50, 100, 900, 600))
     offset = 0
     spacing = 0
     for index, c in enumerate(childrens):
@@ -188,10 +195,10 @@ def load_page_game(win, font, events, image):
         offset += 40
         if (index == 12):
             offset = 0
-            spacing = 250
+            spacing = 450
     offset = 0
     for index, p in enumerate(progress):
-        while (offset < p):
+        while (offset < int(p)):
             pygame.draw.rect(win, (0, 0, 0), (320 + offset *20, 150, 20, 30))
             pygame.draw.rect(win,parser['progress_bar'], (320 + offset *20+2, 150+2, 20-4, 30-4))
             offset += 1
@@ -220,11 +227,11 @@ def main():
             load_page_game(win, font, pygame.event.get(), image)
         elif current_window == WINDOWS['FINISH']:
             load_page_game(win, font)
-        i = 0
-        while i < 1024:
-            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-            i += 100
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
         pygame.display.flip()
         clock.tick(100)
 

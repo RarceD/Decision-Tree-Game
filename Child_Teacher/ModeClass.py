@@ -119,18 +119,5 @@ class LoadFile():
 
             self.radio_circle = data['color_config_children']['radio_circle']
 
-        # print(self.icon_child)
-        # print(self.game_name)
-        # print(self.background)
-        # print(self.enter_button)
-        # print(self.circle_button_yes_no_button)
-        # print(self.circle_question_number)
-        # print(self.letters_color)
-        # print(self.font_primary)
-        # print(self.font_secundary)
-        # print(self.waiting_children_font_up)
-        # print(self.waiting_children_font_down)
-        # print(self.question_text_2)
-
     def parse_data(self):
         pass
