@@ -88,25 +88,25 @@ def on_message(client, userdata, message):
 
 
 def load_page_login(win, image, font, events, client):
-    global current_window, WINDOWS, children
+    global current_window, WINDOWS, children, parser
     input_box = pygame.Rect(350, 500, 400, 50)
     input_enter = pygame.Rect(450, 600, 140, 50)
     game_name = pygame.Rect(200, 100, 600, 300)
 
-    win.fill((30, 30, 30))
+    win.fill(parser.background)
     # Render the current text.
-    txt_surface = font.render(children.name, True, (123, 123, 3))
+    txt_surface = font.render(children.name, True, parser.enter_button_text_color)
     # Resize the box if the text is too long.
     width = max(200, txt_surface.get_width()+10)
     input_box.w = width
     # Blit the text.
     win.blit(txt_surface, (input_box.x+5, input_box.y+5))
     # Blit the input_box rect.
-    pygame.draw.rect(win, (2, 234, 34), input_box, 2)
-    pygame.draw.rect(win, (123, 0, 0), input_enter)
+    pygame.draw.rect(win, parser.enter_button_text_color, input_box, 5)
+    pygame.draw.rect(win, parser.enter_button, input_enter)
 
-    pygame.draw.rect(win, (255, 255, 255), game_name)
-    txt_game_name = font.render("Nombre to guapo", True, (0, 0, 0))
+    pygame.draw.rect(win, parser.background_logo, game_name)
+    txt_game_name = font.render(parser.game_name, True, (0, 0, 0))
     win.blit(txt_game_name, (350, 220))
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
     win.blit(txt_game_name, (460, 610))
@@ -135,15 +135,15 @@ def load_page_login(win, image, font, events, client):
 def load_page_waiting(win, font, image, events):
     global children
 
-    win.fill((30, 30, 30))
+    win.fill(parser.background)
     # Render the current text.
-    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (150, 200, 700, 200), 2)
+    pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
     color_letters = (163, 227, 255)
     txt_surface = font.render(
-        "Espera un momento a que todos", True, color_letters)
+        parser.waiting_children_font_up, True, color_letters)
     win.blit(txt_surface, (200, 233))
     txt_surface = font.render(
-        "tus compañeros entren al juego", True, color_letters)
+        parser.waiting_children_font_down, True, color_letters)
     win.blit(txt_surface, (200, 333))
     txt_surface = font.render(str(children.name), True, color_letters)
     win.blit(txt_surface, (400, 500))
@@ -158,13 +158,13 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
     win.fill((30, 30, 30))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
-    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (200, 50, 600, 150), 2)
-    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (250, 300, 250, 100), 2)
-    pygame.draw.rect(win, (0xFF, 0xFF, 0xFF), (550, 300, 200, 150), 2)
+    pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
+    pygame.draw.rect(win, parser.border_colors, (250, 300, 250, 100), 2)
+    pygame.draw.rect(win, parser.border_colors, (550, 300, 200, 150), 2)
 
     color_letters = (163, 227, 255)
     txt_surface = font.render(
-        "¿ Son correctas las palabras ?", True, color_letters)
+       parser.question_text_2, True, color_letters)
     win.blit(txt_surface, (250, 120))
     txt_surface = font.render(
         mode.words_right[children.current_question-1], True, color_letters)
@@ -172,14 +172,14 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
     win.blit(txt_surface, (320, 330))
     win.blit(word_image, (600, 320))
 
-    color_circle = (87, 154, 230)
+    color_circle = parser.circle_button_yes_no_button
     radio_cicle = 80
     circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_cicle)
     circle_question = pygame.draw.circle(
-        win, color_circle, (500, 600), radio_cicle)
+        win, parser.question_number, (500, 600), radio_cicle)
     circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_cicle)
 
-    color_text = (0, 0, 0)
+    color_text = parser.letters_color
     offset = 17
     txt_surface = font.render("SI", True, color_text)
     win.blit(txt_surface, (100-offset, 300-offset))
@@ -247,7 +247,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
 
 def load_page_end(win, events, font, image_children, image_game_logo, image_tree):
     global children, mode
-    win.fill((30, 30, 30))
+    win.fill(parser.background)
     input_enter = pygame.Rect(750, 600, 140, 50)
     # Add the name of the children
     txt_surface = font.render(children.name, True,  (163, 227, 255))
@@ -255,7 +255,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     win.blit(image_children, (40, 700))
     win.blit(image_game_logo, (870, 30))
     win.blit(image_tree, (150, 100))
-    pygame.draw.rect(win, (123, 0, 0), input_enter)
+    pygame.draw.rect(win, parser.enter_button, input_enter)
 
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
     win.blit(txt_game_name, (760, 610))
@@ -267,9 +267,9 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
             if input_enter.collidepoint(event.pos):
                 print("Enter Press")
 
-    color_circle_wrong = (245, 117, 66)
-    color_circle_right = (38, 106, 189)
-    radio_cicle = 20
+    color_circle_wrong = parser.color_circle_wrong
+    color_circle_right = parser.color_circle_right
+    radio_cicle = parser.radio_cicle
     # Draw the tree
     offset = 0
     color = color_circle_wrong

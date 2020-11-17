@@ -62,7 +62,7 @@
     "cow.png"
   ],
   "global_images": {
-    "game_name": "Nombre to guapo",
+    "game_name": "Nombre (no exit)",
     "game_logo": "game_logo.png"
   },
   "color_config_teacher": {
@@ -74,13 +74,20 @@
   },
   "color_config_children": {
     "background": "(255,255,255)",
-    "enter_button": "(123,123,123)",
+    "background_logo": "(55,55,55)",
+    "enter_button": "(123,0,0)",
+    "enter_button_text_color": "(23,23,13)",
     "circle_button_yes_no_button": "(249,223,23)",
     "circle_question_number": "(123,123,123)",
-    "letters": "(255,255,255)",
+    "letters_color": "(12,32,12)",
     "font_primary": "fantasia.sd",
     "font_secundary": "fsdfa.sd",
-    "waiting_children_font": "Espera a que los niños hagan cosas",
-    "question_text_2": "Esc orrenta esta palabra"
+    "border_colors": "(123,0,0)",
+    "waiting_children_font_up": "Espera un momento a que todos",
+    "waiting_children_font_down": "tus compañeros entren al juego",
+    "question_text_2": "¿ Es correcta esta palabra ?",
+    "color_circle_wrong": "(245, 117, 66)",
+    "color_circle_right": "(38, 106, 189)",
+    "radio_circle":20
   }
 }
