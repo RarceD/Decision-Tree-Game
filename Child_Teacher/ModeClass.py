@@ -71,8 +71,8 @@ class LoadFile():
             self.game_logo = data['global_images']["game_logo"]
 
             self.background = data['color_config_children']['background']
-            self.background = tuple(
-                map(int, str(self.background)[1:-1].split(',')))
+            # self.background = tuple(
+            #     map(int, str(self.background)[1:-1].split(',')))
 
             self.background_logo = data['color_config_children']['background_logo']
             self.background_logo = tuple(

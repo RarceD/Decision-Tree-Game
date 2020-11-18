@@ -93,7 +93,7 @@ def load_page_login(win, image, font, events, client):
     input_enter = pygame.Rect(450, 600, 140, 50)
     game_name = pygame.Rect(200, 100, 600, 300)
 
-    win.fill(parser.background)
+    win.blit(parser.background, (0, 0))
     # Render the current text.
     txt_surface = font.render(children.name, True, parser.enter_button_text_color)
     # Resize the box if the text is too long.
@@ -135,7 +135,7 @@ def load_page_login(win, image, font, events, client):
 def load_page_waiting(win, font, image, events):
     global children
 
-    win.fill(parser.background)
+    win.blit(parser.background, (0, 0))
     # Render the current text.
     pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
     color_letters = (163, 227, 255)
@@ -155,7 +155,7 @@ def load_page_waiting(win, font, image, events):
 
 def load_page_game(win, font, image_children,  image_game_logo, events, client, word_image):
     global children, mode, current_window
-    win.fill(parser.background)
+    win.blit(parser.background, (0, 0))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
@@ -247,7 +247,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client, 
 
 def load_page_end(win, events, font, image_children, image_game_logo, image_tree):
     global children, mode
-    win.fill(parser.background)
+    win.blit(parser.background, (0, 0))
     input_enter = pygame.Rect(750, 600, 140, 50)
     # Add the name of the children
     txt_surface = font.render(children.name, True,  (163, 227, 255))
@@ -308,6 +308,10 @@ def main():
 
     image_tree = pygame.image.load('images/' + 'tree.png')
     image_tree = pygame.transform.scale(image_tree, (600, 600))
+
+    parser.background = pygame.image.load('images/' +parser.background)
+    parser.background = pygame.transform.scale(parser.background, (1024, 768))
+
     timer_update_screen = int(round(time.time()))
 
     while children.run:

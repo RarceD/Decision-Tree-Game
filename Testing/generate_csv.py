@@ -10,7 +10,6 @@ class ChildrenEvaluation:
         self.final_punctuation = 0
 
 
-
 def generate_excel(childrens, words, total_words_fails):
     children_names = []
     children_punctuations = []
@@ -66,13 +65,27 @@ def generate_excel(childrens, words, total_words_fails):
         for w in c.words:
             worksheet.write(row, col, w)
             row += 1
-        col+=1
+        col += 1
         row = initial_row
         for f in c.fails:
             worksheet.write(row, col, f)
             row += 1
         col -= 2
         row += 1
+
+    chart = workbook.add_chart({'type': 'column'})
+
+    # chart.add_series({'values': '=Sheet1!$B$2:$B$6'})
+    chart.add_series({'values': '=Sheet1!$C$2:$C$6'})
+    chart.add_series({'values': '=Sheet1!$D$2:$D$6'})
+    chart.set_title({'name': 'Puntuación y tiempos de niños'})
+    chart.set_legend({'position': 'bottom'})
+    worksheet.insert_chart('N1', chart)
+    chart.set_plotarea({
+        'border': {'color': 'red', 'width': 2, 'dash_type': 'dash'},
+        'fill':   {'color': '#FFFFC2'}
+    })
+
     workbook.close()
 
 
@@ -85,28 +98,27 @@ total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
 a = ChildrenEvaluation('Paco', commond_words)
 a.final_punctuation = 67
 a.final_time = 12
-a.fails = [1,0,0,1]
+a.fails = [1, 0, 0, 1]
 childrens.append(a)
 a = ChildrenEvaluation('Pepe', commond_words)
 a.final_punctuation = 35
 a.final_time = 23
-a.fails = [1,0,0,1]
+a.fails = [1, 0, 0, 1]
 childrens.append(a)
 a = ChildrenEvaluation('Bea', commond_words)
 a.final_time = 54
 a.final_punctuation = 24
-a.fails = [1,1,1,1]
+a.fails = [1, 1, 1, 1]
 childrens.append(a)
 a = ChildrenEvaluation('Rubén', commond_words)
 a.final_time = 32
 a.final_punctuation = 47
-a.fails = [0,0,0,1]
+a.fails = [0, 0, 0, 1]
 childrens.append(a)
 a = ChildrenEvaluation('María', commond_words)
 a.final_time = 122
 a.final_punctuation = 33
-a.fails = [0,1,0,1]
+a.fails = [0, 1, 0, 1]
 childrens.append(a)
 
 generate_excel(childrens, commond_words, total_words_fails)
-
