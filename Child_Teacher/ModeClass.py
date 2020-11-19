@@ -17,13 +17,8 @@ class Mode:
         print(" -> Correct words: ", self.words_right)
         print(" -> Incorrect words: ", self.words_wrong)
 
-class ChildrenEvaluation:
-    def __init__(self, name, words):
-        self.words = words
-        self.name = name
-        self.fails = []
-        self.final_time = 0
-        self.final_punctuation = 0
+
+
 
 class Children:
     def __init__(self):
@@ -109,7 +104,7 @@ class LoadFile():
 
             self.font_primary = data['color_config_children']['font_primary']
             self.font_secundary = data['color_config_children']['font_secundary']
-            
+
             self.border_colors = data['color_config_children']['border_colors']
             self.border_colors = tuple(
                 map(int, str(self.border_colors)[1:-1].split(',')))

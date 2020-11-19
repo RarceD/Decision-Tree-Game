@@ -43,7 +43,8 @@ with open('input.json') as json_file:
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
-    client = mqtt.Client("asdadf31wsd4asdffwefw")  # create new instance
+    # client = mqtt.Client("asdadf31wsd4asdffwefw")  # create new instance
+    client = mqtt.Client("a"+str(random.randint(121233, 35123234)) + "f")
     client.on_message = on_message  # attach function to callback
     # print("connecting to broker")
     client.connect(broker_address)  # connect to broker
