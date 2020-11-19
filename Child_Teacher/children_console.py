@@ -97,7 +97,8 @@ def load_page_login(win, image, font, events, client):
 
     win.blit(parser.background, (0, 0))
     # Render the current text.
-    txt_surface = font.render(children.name, True, parser.enter_button_text_color)
+    txt_surface = font.render(
+        children.name, True, parser.enter_button_text_color)
     # Resize the box if the text is too long.
     width = max(200, txt_surface.get_width()+10)
     input_box.w = width
@@ -165,7 +166,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     pygame.draw.rect(win, parser.border_colors, (550, 300, 250, 220), 2)
     color_letters = parser.letters_color
     txt_surface = font.render(
-       parser.question_text_2, True, color_letters)
+        parser.question_text_2, True, color_letters)
     win.blit(txt_surface, (250, 120))
     txt_surface = font.render(
         mode.words_right[children.current_question-1], True, color_letters)
@@ -178,7 +179,8 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
 
     color_circle = parser.circle_button_yes_no_button
     radio_circle = parser.radio_circle
-    circle_yes = pygame.draw.circle(win, color_circle, (100, 300), radio_circle)
+    circle_yes = pygame.draw.circle(
+        win, color_circle, (100, 300), radio_circle)
     circle_question = pygame.draw.circle(
         win, parser.circle_question_number, (500, 600), radio_circle)
     circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_circle)
@@ -299,7 +301,8 @@ def main():
 
     win = pygame.display.set_mode((1024, 768))
     # font = pygame.font.Font(None, 52)
-    font = pygame.font.Font("b_letter.ttf", 52)
+    print(parser.font_primary)
+    font = pygame.font.Font(parser.font_primary, 52)
     clock = pygame.time.Clock()
     # Start the game on LOGIN:
     current_window = WINDOWS['LOGIN']
@@ -314,7 +317,7 @@ def main():
     image_tree = pygame.image.load('images/' + 'tree.png')
     image_tree = pygame.transform.scale(image_tree, (600, 600))
 
-    parser.background = pygame.image.load('images/' +parser.background)
+    parser.background = pygame.image.load('images/' + parser.background)
     parser.background = pygame.transform.scale(parser.background, (1024, 768))
 
     timer_update_screen = int(round(time.time()))
@@ -338,11 +341,11 @@ def main():
                 children.name = "Laura Lomez"
             load_page_end(win, pygame.event.get(),
                           font, image, image_game_logo, image_tree)
-        i = 0
-        while i < 1024:
-            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-            i += 100
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
 
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))

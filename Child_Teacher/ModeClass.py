@@ -17,6 +17,13 @@ class Mode:
         print(" -> Correct words: ", self.words_right)
         print(" -> Incorrect words: ", self.words_wrong)
 
+class ChildrenEvaluation:
+    def __init__(self, name, words):
+        self.words = words
+        self.name = name
+        self.fails = []
+        self.final_time = 0
+        self.final_punctuation = 0
 
 class Children:
     def __init__(self):
@@ -62,6 +69,8 @@ class LoadFile():
         self.color_circle_right = ""
         self.color_circle_wrong = ""
         self.radio_circle = 0
+        self.font_primary = ""
+        self.font_secondary = ""
 
         with open(input_file) as json_file:
             data = json.load(json_file)
