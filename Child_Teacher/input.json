@@ -6,16 +6,7 @@
         "galdiolo",
         "flor",
         "palmera",
-        "bloso",
-        "adrono",
-        "furta",
-        "tractor",
-        "parque",
-        "abarzar",
-        "tornillo",
-        "aporbar",
-        "falda",
-        "plamera"
+        "bloso"
       ],
       "correct_word": [
         false,
@@ -33,12 +24,10 @@
         false
       ],
       "images": [
-        "person_icon.png",
         "saber.png",
+        "person_icon.png",
         "duck_icon.jpg",
-        "game_logo.png",
-        "duck_icon.jpg",
-        "perso_icon.png"
+        "game_logo.png"
       ]
     },
     {
@@ -79,7 +68,7 @@
         "duck_icon.jpg",
         "game_logo.png",
         "duck_icon.jpg",
-        "perso_icon.png"
+        "person_icon.png"
       ]
     },
     {
@@ -120,7 +109,7 @@
         "duck_icon.jpg",
         "game_logo.png",
         "duck_icon.jpg",
-        "perso_icon.png"
+        "person_icon.png"
       ]
     }
   ],
@@ -143,13 +132,13 @@
     "progress_bar": "(87, 3, 135)"
   },
   "color_config_children": {
-    "background": "background.PNG",
+    "background": "person_icon.PNG",
     "background_logo": "(55,55,55)",
     "enter_button": "(123,0,0)",
     "enter_button_text_color": "(23,23,13)",
     "circle_button_yes_no_button": "(249,223,23)",
     "circle_question_number": "(123,123,123)",
-    "letters_color": "(12,32,12)",
+    "letters_color": "(212,32,12)",
     "font_primary": "fantasia.sd",
     "font_secundary": "fsdfa.sd",
     "border_colors": "(123,0,0)",
@@ -158,6 +147,6 @@
     "question_text_2": "¿Es correcta esta palabra ?",
     "color_circle_wrong": "(245, 117, 66)",
     "color_circle_right": "(38, 106, 189)",
-    "radio_circle": 40
+    "radio_circle": 50
   }
 }

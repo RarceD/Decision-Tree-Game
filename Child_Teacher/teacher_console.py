@@ -70,7 +70,7 @@ def read_config_file(modes, parser):
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
-    client = mqtt.Client("asdf123bea34asdf")  # create new instance
+    client = mqtt.Client("as123a34asdf")  # create new instance
     client.on_message = on_message  # attach function to callback
     print("connecting to broker")
     client.connect(broker_address)  # connect to broker

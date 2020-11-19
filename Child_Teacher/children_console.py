@@ -37,19 +37,19 @@ with open('input.json') as json_file:
         for w in data['modes'][i]["images"]:
             modes[i].images.append(w)
 
-    for m in modes:
-        m.print_itself()
+    # for m in modes:
+    #     m.print_itself()
 
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
-    client = mqtt.Client("asdadf324wsd4asdf")  # create new instance
+    client = mqtt.Client("asdadf31wsd4asdffwefw")  # create new instance
     client.on_message = on_message  # attach function to callback
-    print("connecting to broker")
+    # print("connecting to broker")
     client.connect(broker_address)  # connect to broker
-    print("Subscribing to topic", LISTEN_TOPIC)
+    # print("Subscribing to topic", LISTEN_TOPIC)
     client.subscribe(LISTEN_TOPIC)
-    print("Publishing message to topic", "master_beacon_ack")
+    # print("Publishing message to topic", "master_beacon_ack")
     msg = '''{"ok":true}'''
     client.publish(PUBLISH_TOPIC, msg)
     client.loop_start()  # start the loop
@@ -65,7 +65,7 @@ def on_message(client, userdata, message):
     # print("message received: ", msg)
     parsed_json = json.loads(msg)
     # I received the questions and save them:
-    print(parsed_json)
+    # print(parsed_json)
     if (parsed_json['start']):
         current_window = WINDOWS['ON_GAME']
         max_question_number = parsed_json['mode']
@@ -84,6 +84,8 @@ def on_message(client, userdata, message):
     random.shuffle(mode.words_right)
     random.seed(ran_int_seed)
     random.shuffle(mode.words_wrong)
+    random.seed(ran_int_seed)
+    random.shuffle(mode.images)
     # mode.print_itself()
 
 
@@ -106,7 +108,7 @@ def load_page_login(win, image, font, events, client):
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
     pygame.draw.rect(win, parser.background_logo, game_name)
-    txt_game_name = font.render(parser.game_name, True, (0, 0, 0))
+    txt_game_name = font.render(parser.game_name, True, parser.letters_color)
     win.blit(txt_game_name, (350, 220))
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
     win.blit(txt_game_name, (460, 610))
@@ -138,7 +140,7 @@ def load_page_waiting(win, font, image, events):
     win.blit(parser.background, (0, 0))
     # Render the current text.
     pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
-    color_letters = (163, 227, 255)
+    color_letters = parser.letters_color
     txt_surface = font.render(
         parser.waiting_children_font_up, True, color_letters)
     win.blit(txt_surface, (200, 233))
@@ -153,24 +155,26 @@ def load_page_waiting(win, font, image, events):
             children.run = False
 
 
-def load_page_game(win, font, image_children,  image_game_logo, events, client, word_image):
-    global children, mode, current_window
+def load_page_game(win, font, image_children,  image_game_logo, events, client):
+    global children, mode, current_window, parser
     win.blit(parser.background, (0, 0))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
-    pygame.draw.rect(win, parser.border_colors, (250, 300, 250, 100), 2)
-    pygame.draw.rect(win, parser.border_colors, (550, 300, 200, 150), 2)
-
-    color_letters = (163, 227, 255)
+    pygame.draw.rect(win, parser.border_colors, (170, 300, 330, 100), 2)
+    pygame.draw.rect(win, parser.border_colors, (550, 300, 250, 220), 2)
+    color_letters = parser.letters_color
     txt_surface = font.render(
        parser.question_text_2, True, color_letters)
     win.blit(txt_surface, (250, 120))
     txt_surface = font.render(
         mode.words_right[children.current_question-1], True, color_letters)
     # Each word has a diferent image:
-    win.blit(txt_surface, (320, 330))
-    win.blit(word_image, (600, 320))
+    win.blit(txt_surface, (220, 330))
+    word_image = pygame.image.load(
+        'images/' + mode.images[children.current_question-1])
+    word_image = pygame.transform.scale(word_image, (170, 170))
+    win.blit(word_image, (580, 320))
 
     color_circle = parser.circle_button_yes_no_button
     radio_circle = parser.radio_circle
@@ -294,7 +298,8 @@ def main():
     global current_window, children, mode
 
     win = pygame.display.set_mode((1024, 768))
-    font = pygame.font.Font(None, 52)
+    # font = pygame.font.Font(None, 52)
+    font = pygame.font.Font("b_letter.ttf", 52)
     clock = pygame.time.Clock()
     # Start the game on LOGIN:
     current_window = WINDOWS['LOGIN']
@@ -325,22 +330,19 @@ def main():
         elif (current_window == WINDOWS['ON_GAME']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
-            image_word = pygame.image.load(
-                'images/' + mode.images[children.current_question-1])
-            image_word = pygame.transform.scale(image_word, (100, 100))
+
             load_page_game(win, font, image,
-                           image_game_logo, pygame.event.get(), client, image_word)
+                           image_game_logo, pygame.event.get(), client)
         elif (current_window == WINDOWS['FINISH']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
             load_page_end(win, pygame.event.get(),
                           font, image, image_game_logo, image_tree)
-
-        # i = 0
-        # while i < 1024:
-        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-        #     i += 100
+        i = 0
+        while i < 1024:
+            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+            i += 100
 
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
