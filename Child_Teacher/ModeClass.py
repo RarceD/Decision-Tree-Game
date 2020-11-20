@@ -17,7 +17,16 @@ class Mode:
         print(" -> Correct words: ", self.words_right)
         print(" -> Incorrect words: ", self.words_wrong)
 
+class BadChildren:
+    def __init__(self):
+        self.questions = []
+        self.answers = []
+        self.images = []
 
+    def print_itself(self):
+        print(" -> Incorrect to repeat: ", self.questions)
+        print("Answers: ", self.answers)
+        print("Images: ", self.images)
 
 
 class Children:
