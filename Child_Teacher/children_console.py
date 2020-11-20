@@ -1,7 +1,8 @@
 import pygame
 import json
 import paho.mqtt.client as mqtt
-from ModeClass import Mode, Children, LoadFile
+from ModeClass import Mode, Children
+from LoadFile import LoadFile
 import time
 import random
 
@@ -24,7 +25,6 @@ children = Children()
 children.print_itself()
 parser = LoadFile('input.json')
 modes = []
-
 with open('input.json') as json_file:
     data = json.load(json_file)
     for i in range(0, 3):
@@ -36,9 +36,6 @@ with open('input.json') as json_file:
             modes[i].words_wrong.append(w)
         for w in data['modes'][i]["images"]:
             modes[i].images.append(w)
-
-    # for m in modes:
-    #     m.print_itself()
 
 
 def connect_mqtt():
@@ -96,7 +93,7 @@ def load_page_login(win, image, font, events, client):
     input_enter = pygame.Rect(450, 600, 140, 50)
     game_name = pygame.Rect(200, 100, 600, 300)
 
-    win.blit(parser.background, (0, 0))
+    win.blit(parser.background_login, (0, 0))
     # Render the current text.
     txt_surface = font.render(
         children.name, True, parser.enter_button_text_color)
@@ -139,7 +136,7 @@ def load_page_login(win, image, font, events, client):
 def load_page_waiting(win, font, image, events):
     global children
 
-    win.blit(parser.background, (0, 0))
+    win.blit(parser.background_waiting, (0, 0))
     # Render the current text.
     pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
     color_letters = parser.letters_color
@@ -159,7 +156,7 @@ def load_page_waiting(win, font, image, events):
 
 def load_page_game(win, font, image_children,  image_game_logo, events, client):
     global children, mode, current_window, parser
-    win.blit(parser.background, (0, 0))
+    win.blit(parser.background_game, (0, 0))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
     pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
@@ -254,7 +251,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
 
 def load_page_end(win, events, font, image_children, image_game_logo, image_tree):
     global children, mode
-    win.blit(parser.background, (0, 0))
+    win.blit(parser.background_end, (0, 0))
     input_enter = pygame.Rect(750, 600, 140, 50)
     # Add the name of the children
     txt_surface = font.render(children.name, True,  (163, 227, 255))
@@ -314,13 +311,26 @@ def main():
     # The global game logo
     image_game_logo = pygame.image.load('images/' + parser.game_logo)
     image_game_logo = pygame.transform.scale(image_game_logo, (100, 100))
-
+    #The tree final imagedf'
     image_tree = pygame.image.load('images/' + 'tree.png')
     image_tree = pygame.transform.scale(image_tree, (600, 600))
 
-    parser.background = pygame.image.load('images/' + parser.background)
-    parser.background = pygame.transform.scale(parser.background, (1024, 768))
-
+    parser.background_login = pygame.image.load(
+        'images/' + parser.background_login)
+    parser.background_login = pygame.transform.scale(
+        parser.background_login, (1024, 768))
+    parser.background_waiting = pygame.image.load(
+        'images/' + parser.background_waiting)
+    parser.background_waiting = pygame.transform.scale(
+        parser.background_waiting, (1024, 768))
+    parser.background_game = pygame.image.load(
+        'images/' + parser.background_game)
+    parser.background_game = pygame.transform.scale(
+        parser.background_game, (1024, 768))
+    parser.background_end = pygame.image.load(
+        'images/' + parser.background_end)
+    parser.background_end = pygame.transform.scale(
+        parser.background_end, (1024, 768))
     timer_update_screen = int(round(time.time()))
 
     while children.run:

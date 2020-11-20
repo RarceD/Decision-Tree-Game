@@ -1,0 +1,2 @@
+python teacher_console.py
+pause

@@ -132,7 +132,10 @@
     "progress_bar": "(87, 3, 135)"
   },
   "color_config_children": {
-    "background": "person_icon.PNG",
+    "background_login": "background.PNG",
+    "background_waiting": "game_logo.png",
+    "background_game": "person_icon.png",
+    "background_end": "duck_icon.jpg",
     "background_logo": "(55,55,55)",
     "enter_button": "(123,0,0)",
     "enter_button_text_color": "(23,23,13)",
