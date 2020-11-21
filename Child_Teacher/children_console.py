@@ -230,7 +230,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                     bad_children.answers.append(
                         mode.words_wrong[children.current_question-1])
                     bad_children.images.append(
-                        mode.words_wrong[children.current_question-1])
+                        mode.images[children.current_question-1])
                     bad_children.print_itself()
 
                 # I restart the timer for the next question:
@@ -450,10 +450,11 @@ def main():
     global current_window, children, mode
 
     win = pygame.display.set_mode((1024, 768))
-    font = pygame.font.Font(parser.font_primary, 52)
+    font_primary = pygame.font.Font(parser.font_primary, 52)
+    font_secundary = pygame.font.Font(parser.font_secundary, 52)
     clock = pygame.time.Clock()
     # Start the game on LOGIN:
-    current_window = WINDOWS['FINISH']
+    current_window = WINDOWS['LOGIN']
     # The game icon of the children:
     image = pygame.image.load(
         'icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
@@ -491,56 +492,42 @@ def main():
         parser.background_ranking, (1024, 768))
 
     timer_update_screen = int(round(time.time()))
-
-    # For testting I set the failed words:
-
-    bad_children.questions.append("galdiolo")
-    bad_children.answers.append( False)
-    bad_children.images.append("saber.png")
-
-    bad_children.questions.append("bloso")
-    bad_children.answers.append( False)
-    bad_children.images.append("person_icon.png")
-
-    mode.name = '4'
-
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
-            load_page_login(win,  image, font, pygame.event.get(), client)
+            load_page_login(win,  image, font_primary, pygame.event.get(), client)
         elif (current_window == WINDOWS['WAITING_TEACHER']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
-            load_page_waiting(win, font, image, pygame.event.get())
+            load_page_waiting(win, font_primary, image, pygame.event.get())
         elif (current_window == WINDOWS['ON_GAME']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
 
-            load_page_game(win, font, image,
+            load_page_game(win, font_secundary, image,
                            image_game_logo, pygame.event.get(), client)
         elif (current_window == WINDOWS['FINISH']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
             load_page_end(win, pygame.event.get(),
-                          font, image, image_game_logo, image_tree)
+                          font_secundary, image, image_game_logo, image_tree)
         elif (current_window == WINDOWS['BAD_STUDENT']):
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
             load_page_bad_student(win, pygame.event.get(),
-                                  font, image, image_game_logo, image_tree)
+                                  font_secundary, image, image_game_logo, image_tree)
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
-                                  font, image, image_game_logo, image_tree)
-        i = 0
-        while i < 1024:
-            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-            i += 100
+                                  font_secundary, image, image_game_logo, image_tree)
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
 
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
             children.timer_running += 1
-            # print(children.timer_running)
 
         pygame.display.flip()
         clock.tick(30)
