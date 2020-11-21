@@ -14,7 +14,8 @@ WINDOWS = {
     'WAITING_TEACHER': 1,
     'ON_GAME': 2,
     'FINISH': 3,
-    'BAD_STUDENT': 4
+    'BAD_STUDENT': 4,
+    'RANKING':5
 }
 current_window = 1111
 
@@ -277,6 +278,9 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 print('move to final or repeat')
                 if len(bad_children.questions) > 0:
                     current_window = WINDOWS['BAD_STUDENT']
+                else:
+                    current_window = WINDOWS['RANKING']
+
     #Print the branch:
     txt_game_name = font.render("Camino elegido:", True, (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (740, 310))
@@ -288,7 +292,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     # Draw the tree
     offset = 0
     color = color_circle_wrong
-    mode.name = '4'
+
     max_number_balls = int(mode.name)
     failed_words = len(bad_children.questions)
 
@@ -305,31 +309,132 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 win, color, (123 + 33*i, 123 + 13*i-23), radio_circle)
             if (failed_words > 0):
                 color = color_circle_wrong
+                failed_words-=1
             else:
                 color = color_circle_right
 
     if (max_number_balls >= 6):
-        circle_yes = pygame.draw.circle(win, color, (523, 123), radio_circle)
-        circle_yes = pygame.draw.circle(win, color, (623, 123), radio_circle)
+        for i in range(0, 2):
+            circle_yes = pygame.draw.circle(
+                win, color, (423 + 33*i, 423 + 13*i-23), radio_circle)
+            if (failed_words > 0):
+                color = color_circle_wrong
+                failed_words-=1
+            else:
+                color = color_circle_right
     if (max_number_balls == 8):
-        circle_yes = pygame.draw.circle(win, color, (123, 523), radio_circle)
-        circle_yes = pygame.draw.circle(win, color, (123, 623), radio_circle)
+        for i in range(0, 2):
+            circle_yes = pygame.draw.circle(
+                win, color, (623 + 33*i, 623 + 13*i-23), radio_circle)
+            if (failed_words > 0):
+                color = color_circle_wrong
+                failed_words-=1
+            else:
+                color = color_circle_right
 
 
 def load_page_bad_student(win, events, font, image_children, image_game_logo, image_tree):
-    global children, mode, WINDOWS
-    win.blit(parser.background_end, (0, 0))
+    global children, mode, current_window, parser, bad_children
+    win.fill((4, 4, 4))
+    win.blit(parser.background_bad_student, (0, 0))
+
+    win.blit(image_game_logo, (870, 30))
+    # Render the current text.
+    pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
+    pygame.draw.rect(win, parser.border_colors, (170, 300, 330, 100), 2)
+    pygame.draw.rect(win, parser.border_colors, (550, 300, 250, 220), 2)
+    color_letters = parser.letters_color
+    txt_surface = font.render(
+        parser.question_text_2, True, color_letters)
+    win.blit(txt_surface, (250, 120))
+    txt_surface = font.render(
+        bad_children.questions[bad_children.index], True, color_letters)
+    # Each word has a diferent image:
+    win.blit(txt_surface, (220, 330))
+    word_image = pygame.image.load(
+        'images/' + bad_children.images[bad_children.index])
+    word_image = pygame.transform.scale(word_image, (170, 170))
+    win.blit(word_image, (580, 320))
+
+    color_circle = parser.circle_button_yes_no_button
+    radio_circle = parser.radio_circle
+    circle_yes = pygame.draw.circle(
+        win, color_circle, (100, 300), radio_circle)
+    circle_question = pygame.draw.circle(
+        win, parser.circle_question_number, (500, 600), radio_circle)
+    circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_circle)
+
+    color_text = parser.letters_color
+    offset = 17
+    txt_surface = font.render("SI", True, color_text)
+    win.blit(txt_surface, (100-offset, 300-offset))
+    txt_surface = font.render("NO", True, color_text)
+    win.blit(txt_surface, (900-offset, 300-offset))
+    txt_surface = font.render(str(bad_children.index + 1), True, color_text)
+    win.blit(txt_surface, (500-offset, 600-offset))
+
+    # Child name and picture:
+    txt_surface = font.render(children.name, True, color_letters)
+    win.blit(txt_surface, (100, 700))
+    win.blit(image_children, (40, 700))
+    for event in events:
+        if event.type == pygame.QUIT:
+            children.run = False
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            action = 0  # I get the child response
+            children_solution_ok = False  # The real child response to compare
+            response = False
+            if circle_yes.collidepoint(event.pos):
+                response = True
+                action = 1
+            if circle_no.collidepoint(event.pos):
+                response = False
+                action = 2
+            if action > 0:
+                # Remove the bad_children and continue the game:
+                if (bad_children.answers[bad_children.index]== response):
+                    bad_children.answers.pop(bad_children.index)
+                    bad_children.questions.pop(bad_children.index)
+                    bad_children.images.pop(bad_children.index)
+                    if (bad_children.index!=0):
+                        bad_children.index-=1
+                else:
+                    if (len(bad_children.answers) > bad_children.index + 1):
+                        bad_children.index += 1
+                    else:
+                        current_window = WINDOWS['FINISH']
+
+                # Do I have to finish the game?:
+                if (len(bad_children.answers) == 0):
+                    print("I finish the game")
+                    current_window = WINDOWS['FINISH']
+                else:
+                    print("increase the current question")
+
+
+def load_page_ranking(win, events, font, image_children, image_game_logo, image_tree):
+    global children, mode, bad_children, WINDOWS, current_window
+    win.blit(parser.background_ranking, (0, 0))
     input_enter = pygame.Rect(750, 600, 140, 50)
-    # # Add the name of the children
-    # txt_surface = font.render(children.name, True,  parser.letters_color)
-    # win.blit(txt_surface, (100, 700))
-    # win.blit(image_children, (40, 700))
-    # win.blit(image_game_logo, (870, 30))
-    # win.blit(image_tree, (150, 100))
+    # Add the name of the children
+    txt_surface = font.render(children.name, True,  parser.letters_color)
+    win.blit(txt_surface, (100, 700))
+    win.blit(image_children, (40, 700))
+    win.blit(image_game_logo, (870, 30))
+  
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
-    # txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
-    # win.blit(txt_game_name, (760, 610))
+    txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
+    win.blit(txt_game_name, (760, 610))
+    txt_game_name = font.render("RANKING ALUMNOS:", True, parser.letters_color)
+    win.blit(txt_game_name, (310, 110))
+    names = ['Bea', 'Ruben', 'Luís', 'Francisco Franco', 'Paquito']
+    offset = 0
+    for i in range(0, 5):
+        txt_game_name = font.render(names[i], True, parser.letters_color)
+        win.blit(txt_game_name, (350, 250 + offset))
+        offset += 50
+    
 
     for event in events:
         if event.type == pygame.QUIT:
@@ -337,10 +442,9 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
         if event.type == pygame.MOUSEBUTTONDOWN:
             if input_enter.collidepoint(event.pos):
                 if len(bad_children.questions) > 0:
-                    current_window = WINDOWS['FINISH']
-                else:
                     current_window = WINDOWS['BAD_STUDENT']
-
+                else:
+                    current_window = WINDOWS['RANKING']
 
 def main():
     global current_window, children, mode
@@ -377,12 +481,29 @@ def main():
         'images/' + parser.background_end)
     parser.background_end = pygame.transform.scale(
         parser.background_end, (1024, 768))
+    parser.background_bad_student = pygame.image.load(
+        'images/' + parser.background_bad_student)
+    parser.background_bad_student = pygame.transform.scale(
+        parser.background_bad_student, (1024, 768))
+    parser.background_ranking = pygame.image.load(
+        'images/' + parser.background_ranking)
+    parser.background_ranking = pygame.transform.scale(
+        parser.background_ranking, (1024, 768))
+
     timer_update_screen = int(round(time.time()))
 
     # For testting I set the failed words:
-    bad_children.questions.append(1)
-    bad_children.answers.append(1)
-    bad_children.images.append(1)
+
+    bad_children.questions.append("galdiolo")
+    bad_children.answers.append( False)
+    bad_children.images.append("saber.png")
+
+    bad_children.questions.append("bloso")
+    bad_children.answers.append( False)
+    bad_children.images.append("person_icon.png")
+
+    mode.name = '4'
+
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
@@ -406,6 +527,9 @@ def main():
             if (len(children.name) == 0):
                 children.name = "Laura Lomez"
             load_page_bad_student(win, pygame.event.get(),
+                                  font, image, image_game_logo, image_tree)
+        elif (current_window == WINDOWS['RANKING']):
+            load_page_ranking(win, pygame.event.get(),
                                   font, image, image_game_logo, image_tree)
         i = 0
         while i < 1024:

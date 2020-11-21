@@ -9,7 +9,9 @@ class LoadFile():
         self.background_waiting = ""
         self.background_game = ""
         self.background_end = ""
+        self.background_ranking = ""
         self.background_logo = ""
+        self.background_bad_student = ""
         self.enter_button = ""
         self.enter_button_text_color = ""
         self.circle_button_yes_no_button = ""
@@ -37,13 +39,15 @@ class LoadFile():
             self.background_waiting = data['color_config_children'][ 'background_waiting']
             self.background_game = data['color_config_children'][ 'background_game']
             self.background_end = data['color_config_children'][ 'background_end']
+            self.background_bad_student = data['color_config_children']['background_bad_student']
+            self.background_ranking = data['color_config_children']['background_ranking']
             # self.background = tuple(
             #     map(int, str(self.background)[1:-1].split(',')))
 
             self.background_logo = data['color_config_children']['background_logo']
             self.background_logo = tuple(
                 map(int, str(self.background_logo)[1:-1].split(',')))
-
+                
             self.enter_button = data['color_config_children']['enter_button']
             self.enter_button = tuple(
                 map(int, str(self.enter_button)[1:-1].split(',')))

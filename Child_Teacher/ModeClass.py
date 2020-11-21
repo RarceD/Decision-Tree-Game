@@ -22,6 +22,7 @@ class BadChildren:
         self.questions = []
         self.answers = []
         self.images = []
+        self.index = 0
 
     def print_itself(self):
         print(" -> Incorrect to repeat: ", self.questions)

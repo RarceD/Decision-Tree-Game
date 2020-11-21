@@ -136,7 +136,10 @@
     "background_waiting": "game_logo.png",
     "background_game": "person_icon.png",
     "background_end": "duck_icon.jpg",
-    "background_logo": "(55,55,55)",
+    "background_bad_student": "game_logo.PNG",
+    "background_ranking": "background.PNG",
+
+    "background_logo": "(23,23,13)",
     "enter_button": "(123,0,0)",
     "enter_button_text_color": "(23,23,13)",
     "circle_button_yes_no_button": "(249,223,23)",
