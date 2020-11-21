@@ -7,7 +7,12 @@
 CRGB leds[1];
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
-
+typedef struct
+{
+   int len;
+   char words[20];
+} Search;
+Search finds[5];
 void setup_wifi()
 {
    // We start by connecting to a WiFi network
@@ -75,15 +80,54 @@ void reconnect()
       }
    }
 }
-
+bool search_word(Search *finds, int len, char *payl)
+{
+   int i = 0; //payload index
+   for (; i < len; i++)
+   {
+      // printf("%c \n", payload[i]);
+      if (payl[i] == finds->words[0])
+      {
+         int l;
+         bool match = false;
+         for (l = 0; l < finds->len; l++)
+            if (payl[i + l] == finds->words[l])
+               match = true;
+            else
+            {
+               match = false;
+               break;
+            }
+         if (match)
+            return true;
+      }
+   }
+   return false;
+}
 void callback(char *topic, byte *payload, unsigned int length)
 {
    Serial.println(topic);
 
    if (!strcmp(topic, MQTT_TEXT))
    {
-      leds[0] = CRGB::Red;
+      bool sol = false;
+      if (strstr((char *)(payload), word_1) != NULL || strstr((char *)(payload), word_2) != NULL)
+         sol = true;
+      if (strstr((char *)(payload), word_3) != NULL || strstr((char *)(payload), word_4) != NULL)
+         sol = true;
+      if (strstr((char *)(payload), word_5) != NULL || strstr((char *)(payload), word_6) != NULL)
+         sol = true;
+      if (strstr((char *)(payload), word_7) != NULL || strstr((char *)(payload), word_8) != NULL)
+         sol = true;
+      if (strstr((char *)(payload), word_9) != NULL || strstr((char *)(payload), word_10) != NULL)
+         sol = true;
+
+      if (sol)
+         leds[0] = CRGB::Red;
+      else
+         leds[0] = CRGB::Blue;
       FastLED.show();
+      delay(100);
    }
    else if (!strcmp(topic, MQTT_TFG_START))
    {
@@ -105,13 +149,11 @@ void callback(char *topic, byte *payload, unsigned int length)
       leds[0] = CRGB::SkyBlue;
       FastLED.show();
    }
-
    else if (!strcmp(topic, MQTT_ADIOS))
    {
       leds[0] = CRGB::Green;
       FastLED.show();
    }
-
    else if (!strcmp(topic, MQTT_LOVE))
    {
       leds[0] = CRGB::OliveDrab;
