@@ -150,6 +150,7 @@ def on_message(client, userdata, message):
 
 
 def generate_excel(childrens, words, total_words_fails):
+    words = childrens[0].words
     children_names = []
     children_punctuations = []
     total_words_times = []
