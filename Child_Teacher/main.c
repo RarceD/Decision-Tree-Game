@@ -3,7 +3,7 @@
 #include <string.h>
 int main()
 {
-    char *sent = "this is my sample tetitasmacdufi example";
+    char *sent = "this is my sampl example";
 
     if (strstr(sent, word_8) != NULL)
         printf("I have find it");

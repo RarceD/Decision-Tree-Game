@@ -123,9 +123,9 @@ void callback(char *topic, byte *payload, unsigned int length)
          sol = true;
 
       if (sol)
-         leds[0] = CRGB::Red;
+         leds[0] = CRGB::LawnGreen ;
       else
-         leds[0] = CRGB::Blue;
+         leds[0] = CRGB::DarkViolet;
       FastLED.show();
       delay(100);
    }
