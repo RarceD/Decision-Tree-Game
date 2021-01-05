@@ -1,0 +1,18 @@
+Pantalla inicio del juego: luz blanca fija
+Waiting: luz amarilla parpadeante
+
+Se pasa a las preguntas: luz blanca fija. En el momento en el que se responde de 
+forma errónea la luz parpadea de color rojo un par de veces y vuelve a un color
+ blanco fijo. En caso de contestar de forma correcta, la dinámica es igual pero
+ siendo el parpadeo de color verde.
+
+Pantalla final del árbol con todas las preguntas acertadas: azul fija
+Pantalla final del árbol con fallos: roja fija
+Pantalla de ranking: morado parpadeante
+
+audio al pulsar un botón de si o no
+
+
+Esos son los dos tipos de letra que utilizaría. Lo único que cambiaria es que 
+la fuente 1 se utilice en la pantalla del login, waiting, end y ranking
+Mientras que la fuente 2 solo para las pantallas de preguntas

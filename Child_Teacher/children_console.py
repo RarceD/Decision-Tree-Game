@@ -220,10 +220,14 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                 if (mode.words_wrong[children.current_question-1] == response):
                     puntuation = children.calculate_punctuation(
                         children.timer_running)
+                    pygame.mixer.music.load('audio/si.wav')
+                    pygame.mixer.music.play(0)
                     print("the response is ok")
                 else:
                     puntuation = 0
                     print("the response is NOT OK")
+                    pygame.mixer.music.load('audio/no.wav')
+                    pygame.mixer.music.play(0)
                     # I save to previously repeat this little asshole the question:
                     bad_children.questions.append(
                         mode.words_right[children.current_question-1])
