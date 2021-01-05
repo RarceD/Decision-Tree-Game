@@ -4,6 +4,18 @@
 #include <FastLED.h>
 #include "colors.h"
 
+typedef enum
+{
+   INIT,
+   WAITING,
+   ON_GAME,
+   CORRECT_ANSWER,
+   INCORRECT_ANSWER,
+   END_GAME,
+   RANKING
+} States;
+#define BLINK_FRECUENCY 500 //in miliseconds
+States state_machine = INIT;
 CRGB leds[1];
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
@@ -107,6 +119,48 @@ bool search_word(Search *finds, int len, char *payl)
 void callback(char *topic, byte *payload, unsigned int length)
 {
    Serial.println(topic);
+   if (!strcmp(topic, MQTT_CHILDREN_MOVE))
+   {
+      //init -> waiting
+      if (strstr((char *)(payload), "0xAA") != NULL)
+      {
+         state_machine = WAITING;
+      }
+      //waiting -> on_game
+      if (strstr((char *)(payload), "0xBB") != NULL)
+      {
+         state_machine = ON_GAME;
+      }
+      //on_game -> correct
+      if (strstr((char *)(payload), "0xCC") != NULL)
+      {
+         state_machine = CORRECT_ANSWER;
+      }
+      //on_game -> incorrect
+      if (strstr((char *)(payload), "0xDD") != NULL)
+      {
+         state_machine = INCORRECT_ANSWER;
+      }
+      //on_game -> end_true
+      if (strstr((char *)(payload), "0xEE") != NULL)
+      {
+         leds[0] = CRGB::Blue;
+         FastLED.show();
+      }
+      //on_game -> end_false
+      if (strstr((char *)(payload), "0xFF") != NULL)
+      {
+         leds[0] = CRGB::Red;
+         FastLED.show();
+      }
+      //on_game -> ranking
+      if (strstr((char *)(payload), "0xRR") != NULL)
+      {
+         state_machine = RANKING;
+         leds[0] = CRGB::Purple;
+         FastLED.show();
+      }
+   }
 
    if (!strcmp(topic, MQTT_TEXT))
    {
@@ -123,7 +177,7 @@ void callback(char *topic, byte *payload, unsigned int length)
          sol = true;
 
       if (sol)
-         leds[0] = CRGB::LawnGreen ;
+         leds[0] = CRGB::LawnGreen;
       else
          leds[0] = CRGB::DarkViolet;
       FastLED.show();
@@ -173,11 +227,64 @@ void setup()
    client.setServer(mqtt_server, mqtt_port);
    client.setCallback(callback);
    reconnect();
-   leds[0] = CRGB::BlanchedAlmond;
+   uint64_t millix = millis();
+   bool blink_status = true;
+   //I first initialize the led to white:
+
+   leds[0] = CRGB::White;
    FastLED.show();
 
    while (true)
    {
+      switch (state_machine)
+      {
+      case INIT:
+         millix = millis();
+         break;
+      case WAITING:
+         if (millis() - millix >= BLINK_FRECUENCY)
+         {
+            if (blink_status)
+               leds[0] = CRGB::Black;
+            else
+               leds[0] = CRGB::Yellow;
+            blink_status != blink_status;
+            FastLED.show();
+         }
+         break;
+      case ON_GAME:
+         break;
+      case CORRECT_ANSWER:
+         for (int i = 0; i < 4; i++)
+         {
+            leds[0] = CRGB::Green;
+            FastLED.show();
+            delay(BLINK_FRECUENCY);
+            leds[0] = CRGB::White;
+            FastLED.show();
+            delay(BLINK_FRECUENCY);
+         }
+         state_machine = ON_GAME;
+         break;
+      case INCORRECT_ANSWER:
+         for (int i = 0; i < 4; i++)
+         {
+            leds[0] = CRGB::Red;
+            FastLED.show();
+            delay(BLINK_FRECUENCY);
+            leds[0] = CRGB::White;
+            FastLED.show();
+            delay(BLINK_FRECUENCY);
+         }
+         state_machine = ON_GAME;
+         break;
+      case END_GAME:
+         break;
+      case RANKING:
+         break;
+      default:
+         break;
+      }
       reconnect();
       client.loop();
    }

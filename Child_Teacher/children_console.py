@@ -19,29 +19,6 @@ WINDOWS = {
 }
 current_window = 1111
 
-# I create the mode that hold the max questions number and the solutions/images
-# received from the teacher
-mode = Mode()
-# The current status of the children, time, question, etc..
-children = Children()
-children.print_itself()
-parser = LoadFile('input.json')
-bad_children = BadChildren()
-bad_children.print_itself()
-modes = []
-with open('input.json') as json_file:
-    data = json.load(json_file)
-    for i in range(0, 3):
-        modes.append(Mode())
-        modes[i].name = data['modes'][i]["name"]
-        for w in data['modes'][i]["words"]:
-            modes[i].words_right.append(w)
-        for w in data['modes'][i]["correct_word"]:
-            modes[i].words_wrong.append(w)
-        for w in data['modes'][i]["images"]:
-            modes[i].images.append(w)
-
-
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
     # client = mqtt.Client("asdadf31wsd4asdffwefw")  # create new instance
@@ -510,6 +487,26 @@ def main():
 
 
 if __name__ == '__main__':
+    # I create the mode that hold the max questions number and the solutions/images
+    # received from the teacher
+    mode = Mode()
+    # The current status of the children, time, question, etc..
+    children = Children()
+    parser = LoadFile('input.json')
+    bad_children = BadChildren()
+    modes = []
+    with open('input.json') as json_file:
+        data = json.load(json_file)
+        for i in range(0, 3):
+            modes.append(Mode())
+            modes[i].name = data['modes'][i]["name"]
+            for w in data['modes'][i]["words"]:
+                modes[i].words_right.append(w)
+            for w in data['modes'][i]["correct_word"]:
+                modes[i].words_wrong.append(w)
+            for w in data['modes'][i]["images"]:
+                modes[i].images.append(w)
+
     pygame.init()
     client = connect_mqtt()
     main()
