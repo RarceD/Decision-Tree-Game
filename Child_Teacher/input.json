@@ -12,22 +12,13 @@
         false,
         true,
         true,
-        false,
-        false,
-        false,
-        true,
-        true,
-        false,
-        true,
-        false,
-        true,
         false
       ],
       "images": [
-        "saber.png",
-        "person_icon.png",
-        "duck_icon.jpg",
-        "game_logo.png"
+        "gladiolo.jpg",
+        "flor.jpg",
+        "palmera.jpg",
+        "bolso.jpg"
       ]
     },
     {
@@ -63,12 +54,19 @@
         false
       ],
       "images": [
-        "person_icon.png",
-        "saber.png",
-        "duck_icon.jpg",
-        "game_logo.png",
-        "duck_icon.jpg",
-        "person_icon.png"
+        "gladiolo.jpg",
+        "flor.jpg",
+        "palmera.jpg",
+        "bolso.jpg",
+        "adorno.jpg",
+        "fruta.jpg",
+        "tractor.jpg",
+        "parque.jpg",
+        "abrazo.jpg",
+        "tornillo.jpg",
+        "aprobado.jpg",
+        "falda.jpg",
+        "palmera.jpg"
       ]
     },
     {
@@ -104,21 +102,63 @@
         false
       ],
       "images": [
-        "person_icon.png",
-        "saber.png",
-        "duck_icon.jpg",
-        "game_logo.png",
-        "duck_icon.jpg",
-        "person_icon.png"
+        "gladiolo.jpg",
+        "flor.jpg",
+        "palmera.jpg",
+        "bolso.jpg",
+        "adorno.jpg",
+        "fruta.jpg",
+        "tractor.jpg",
+        "parque.jpg",
+        "abrazo.jpg",
+        "tornillo.jpg",
+        "aprobado.jpg",
+        "falda.jpg",
+        "palmera.jpg"
       ]
     }
   ],
   "icon_child_sharable": [
-    "pinguin.png",
-    "jellyfish.png",
-    "morse.png",
-    "frog.png",
-    "cow.png"
+    "001-superhero.png",
+    "002-superhero.png",
+    "003-superhero.png",
+    "004-superhero.png",
+    "005-superhero.png",
+    "006-superhero.png",
+    "007-superhero.png",
+    "008-superhero.png",
+    "009-superhero.png",
+    "010-superhero.png",
+    "011-superhero.png",
+    "012-superhero.png",
+    "013-superhero.png",
+    "014-superhero.png",
+    "017-superhero.png",
+    "019-superhero.png",
+    "021-superhero.png",
+    "022-superhero.png",
+    "023-superhero.png",
+    "024-superhero.png",
+    "025-superhero.png",
+    "026-superhero.png",
+    "027-superhero.png",
+    "028-superhero.png",
+    "029-superhero.png",
+    "030-superhero.png",
+    "031-superhero.png",
+    "032-superhero.png",
+    "034-superhero.png",
+    "035-superhero.png",
+    "036-superhero.png",
+    "037-superhero.png",
+    "038-superhero.png",
+    "039-superhero.png",
+    "040-superhero.png",
+    "041-superhero.png",
+    "042-superhero.png",
+    "047-superhero.png",
+    "049-superhero.png",
+    "050-superhero.png"
   ],
   "global_images": {
     "game_name": "Nombre (no exit)",
@@ -132,27 +172,27 @@
     "progress_bar": "(87, 3, 135)"
   },
   "color_config_children": {
-    "background_login": "background.PNG",
-    "background_waiting": "game_logo.png",
-    "background_game": "person_icon.png",
-    "background_end": "duck_icon.jpg",
-    "background_bad_student": "game_logo.PNG",
-    "background_ranking": "background.PNG",
+    "background_login": "fondo_page_1.jpg",
+    "background_waiting": "fondo_page_2.jpg",
+    "background_game": "fondo_preguntas.jpg",
+    "background_end": "fondo_final2.jpg",
+    "background_bad_student": "fondo_page_3.jpg",
+    "background_ranking": "ranking_page.jpg",
 
     "background_logo": "(23,23,13)",
-    "enter_button": "(123,0,0)",
+    "enter_button": "(242, 132, 130)",
     "enter_button_text_color": "(23,23,13)",
     "circle_button_yes_no_button": "(249,223,23)",
     "circle_question_number": "(123,123,123)",
-    "letters_color": "(212,32,12)",
-    "font_primary": "b_letter.ttf",
-    "font_secundary": "b_letter.ttf",
+    "letters_color": "(95, 15, 64)",
+    "font_primary": "Always In My Heart.ttf",
+    "font_secundary": "AmaticSC-Bold.ttf",
     "border_colors": "(123,0,0)",
     "waiting_children_font_up": "Espera un momento a que todos",
     "waiting_children_font_down": "tus amigos entren al juego",
     "question_text_2": "¿Es correcta esta palabra ?",
     "color_circle_wrong": "(245, 117, 66)",
     "color_circle_right": "(38, 106, 189)",
-    "radio_circle": 50
+    "radio_circle": 70
   }
 }
