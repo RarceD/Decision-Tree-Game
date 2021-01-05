@@ -89,5 +89,34 @@ class LoadFile():
 
             self.radio_circle = data['color_config_children']['radio_circle']
 
-    def parse_data(self):
-        pass
+    def parse_data(self, pygame):
+        dimensions = (1024, 768)
+        self.background_login = pygame.image.load(
+            'images/' + self.background_login)
+        self.background_login = pygame.transform.scale(
+            self.background_login, dimensions)
+        self.background_waiting = pygame.image.load(
+            'images/' + self.background_waiting)
+        self.background_waiting = pygame.transform.scale(
+            self.background_waiting, dimensions)
+        self.background_game = pygame.image.load(
+            'images/' + self.background_game)
+        self.background_game = pygame.transform.scale(
+            self.background_game, dimensions)
+        self.background_end = pygame.image.load(
+            'images/' + self.background_end)
+        self.background_end = pygame.transform.scale(
+            self.background_end, dimensions)
+        self.background_bad_student = pygame.image.load(
+            'images/' + self.background_bad_student)
+        self.background_bad_student = pygame.transform.scale(
+            self.background_bad_student, dimensions)
+        self.background_ranking = pygame.image.load(
+            'images/' + self.background_ranking)
+        self.background_ranking = pygame.transform.scale(
+            self.background_ranking, dimensions)
+        self.font_primary = pygame.font.Font(self.font_primary, 52)
+        self.font_secundary = pygame.font.Font(self.font_secundary, 52)
+        # The global game logo:
+        self.game_logo  = pygame.image.load('images/' + self.game_logo)
+        self.game_logo = pygame.transform.scale(self.game_logo, (100, 100))

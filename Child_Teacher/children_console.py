@@ -272,7 +272,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
-    win.blit(txt_game_name, (760, 610))
+    win.blit(txt_game_name, (780, 590))
 
     for event in events:
         if event.type == pygame.QUIT:
@@ -306,21 +306,31 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
         failed_words -= 1
     else:
         color = color_circle_right
-
+    x_space = 80
     if (max_number_balls >= 4):
         for i in range(0, 4):
-            circle_yes = pygame.draw.circle(
-                win, color, (123 + 33*i, 123 + 13*i-23), radio_circle)
-            if (failed_words > 0):
-                color = color_circle_wrong
-                failed_words-=1
-            else:
-                color = color_circle_right
+            if i<3:
+                circle_yes = pygame.draw.circle(
+                    win, color, (350 + x_space*i, 200), radio_circle)
+                if (failed_words > 0):
+                    color = color_circle_wrong
+                    failed_words-=1
+                else:
+                    color = color_circle_right
+            else:                
+                circle_yes = pygame.draw.circle(
+                    win, color, (350 + x_space , 350), radio_circle)
+                if (failed_words > 0):
+                    color = color_circle_wrong
+                    failed_words-=1
+                else:
+                    color = color_circle_right
+
 
     if (max_number_balls >= 6):
         for i in range(0, 2):
             circle_yes = pygame.draw.circle(
-                win, color, (423 + 33*i, 423 + 13*i-23), radio_circle)
+                win, color, (400 + x_space*i, 275), radio_circle)
             if (failed_words > 0):
                 color = color_circle_wrong
                 failed_words-=1
@@ -329,7 +339,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     if (max_number_balls == 8):
         for i in range(0, 2):
             circle_yes = pygame.draw.circle(
-                win, color, (623 + 33*i, 623 + 13*i-23), radio_circle)
+                win, color, (350 + x_space*2*i, 350), radio_circle)
             if (failed_words > 0):
                 color = color_circle_wrong
                 failed_words-=1
@@ -429,14 +439,14 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
-    win.blit(txt_game_name, (760, 610))
+    win.blit(txt_game_name, (780, 590))
     txt_game_name = font.render("RANKING ALUMNOS:", True, parser.letters_color)
     win.blit(txt_game_name, (310, 110))
-    names = ['Bea', 'Ruben', 'Luís', 'Francisco Franco', 'Paquito']
+    names = ['Bea', 'Ruben', 'Luís', 'Francisco ', 'Paquito']
     offset = 0
     for i in range(0, 5):
         txt_game_name = font.render(names[i], True, parser.letters_color)
-        win.blit(txt_game_name, (350, 250 + offset))
+        win.blit(txt_game_name, (360, 225 + offset))
         offset += 50
     
 
@@ -452,87 +462,49 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
 
 def main():
     global current_window, children, mode
-
-    win = pygame.display.set_mode((1024, 768))
-    font_primary = pygame.font.Font(parser.font_primary, 52)
-    font_secundary = pygame.font.Font(parser.font_secundary, 52)
     clock = pygame.time.Clock()
     # Start the game on LOGIN:
+    win = pygame.display.set_mode((1024, 768))
     current_window = WINDOWS['LOGIN']
     # The game icon of the children:
     image = pygame.image.load(
         'icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
     image = pygame.transform.scale(image, (50, 50))
-    # The global game logo
-    image_game_logo = pygame.image.load('images/' + parser.game_logo)
-    image_game_logo = pygame.transform.scale(image_game_logo, (100, 100))
-    # The tree final imagedf'
+    # The tree final image:
     image_tree = pygame.image.load('images/' + 'tree.png')
     image_tree = pygame.transform.scale(image_tree, (600, 600))
-
-    parser.background_login = pygame.image.load(
-        'images/' + parser.background_login)
-    parser.background_login = pygame.transform.scale(
-        parser.background_login, (1024, 768))
-    parser.background_waiting = pygame.image.load(
-        'images/' + parser.background_waiting)
-    parser.background_waiting = pygame.transform.scale(
-        parser.background_waiting, (1024, 768))
-    parser.background_game = pygame.image.load(
-        'images/' + parser.background_game)
-    parser.background_game = pygame.transform.scale(
-        parser.background_game, (1024, 768))
-    parser.background_end = pygame.image.load(
-        'images/' + parser.background_end)
-    parser.background_end = pygame.transform.scale(
-        parser.background_end, (1024, 768))
-    parser.background_bad_student = pygame.image.load(
-        'images/' + parser.background_bad_student)
-    parser.background_bad_student = pygame.transform.scale(
-        parser.background_bad_student, (1024, 768))
-    parser.background_ranking = pygame.image.load(
-        'images/' + parser.background_ranking)
-    parser.background_ranking = pygame.transform.scale(
-        parser.background_ranking, (1024, 768))
-
+    # Parse all the images and fonts:
+    parser.parse_data(pygame)
+    # Periodic task made with this timer:
     timer_update_screen = int(round(time.time()))
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
-            load_page_login(win,  image, font_primary, pygame.event.get(), client)
+            load_page_login(win,  image, parser.font_primary, pygame.event.get(), client)
         elif (current_window == WINDOWS['WAITING_TEACHER']):
-            if (len(children.name) == 0):
-                children.name = "Laura Lomez"
-            load_page_waiting(win, font_primary, image, pygame.event.get())
+            load_page_waiting(win, parser.font_primary, image, pygame.event.get())
         elif (current_window == WINDOWS['ON_GAME']):
-            if (len(children.name) == 0):
-                children.name = "Laura Lomez"
-
-            load_page_game(win, font_secundary, image,
-                           image_game_logo, pygame.event.get(), client)
+            load_page_game(win, parser.font_secundary, image,
+                           parser.game_logo, pygame.event.get(), client)
         elif (current_window == WINDOWS['FINISH']):
-            if (len(children.name) == 0):
-                children.name = "Laura Lomez"
             load_page_end(win, pygame.event.get(),
-                          font_secundary, image, image_game_logo, image_tree)
+                          parser.font_primary, image, parser.game_logo, image_tree)
         elif (current_window == WINDOWS['BAD_STUDENT']):
-            if (len(children.name) == 0):
-                children.name = "Laura Lomez"
             load_page_bad_student(win, pygame.event.get(),
-                                  font_secundary, image, image_game_logo, image_tree)
+                                  parser.font_primary, image, parser.game_logo, image_tree)
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
-                                  font_secundary, image, image_game_logo, image_tree)
+                                  parser.font_primary, image, parser.game_logo, image_tree)
         # i = 0
         # while i < 1024:
         #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
         #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
         #     i += 100
 
+        # I count the time on game for calculate children points
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
             children.timer_running += 1
-
         pygame.display.flip()
         clock.tick(30)
 
