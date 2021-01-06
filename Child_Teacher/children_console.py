@@ -8,6 +8,7 @@ import random
 
 
 PUBLISH_TOPIC = 'TFG_B/children'
+PUBLISH_LEDS = 'TFG_B/children_move'
 LISTEN_TOPIC = 'TFG_B/teacher'
 WINDOWS = {
     'LOGIN': 0,
@@ -15,9 +16,10 @@ WINDOWS = {
     'ON_GAME': 2,
     'FINISH': 3,
     'BAD_STUDENT': 4,
-    'RANKING':5
+    'RANKING': 5
 }
 current_window = 1111
+
 
 def connect_mqtt():
     broker_address = "broker.mqttdashboard.com"
@@ -29,8 +31,7 @@ def connect_mqtt():
     # print("Subscribing to topic", LISTEN_TOPIC)
     client.subscribe(LISTEN_TOPIC)
     # print("Publishing message to topic", "master_beacon_ack")
-    msg = '''{"ok":true}'''
-    client.publish(PUBLISH_TOPIC, msg)
+    client.publish(PUBLISH_LEDS, 'RESET')
     client.loop_start()  # start the loop
     return client
 
@@ -46,6 +47,8 @@ def on_message(client, userdata, message):
     # I received the questions and save them:
     # print(parsed_json)
     if (parsed_json['start']):
+        # waiting -> on_game
+        client.publish(PUBLISH_LEDS, '0xBB')
         current_window = WINDOWS['ON_GAME']
         max_question_number = parsed_json['mode']
         print(max_question_number)
@@ -100,6 +103,8 @@ def load_page_login(win, image, font, events, client):
             if input_enter.collidepoint(event.pos):
                 if (len(children.name) != 0):
                     current_window = WINDOWS['WAITING_TEACHER']
+                    # init -> waiting
+                    client.publish(PUBLISH_LEDS, '0xAA')
                     msg = "{\"uuid\":\""+children.name+"\",\"question\":0}"
                     client.publish(PUBLISH_TOPIC, msg)
                     print("Enter Press")
@@ -200,11 +205,15 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                     pygame.mixer.music.load('audio/si.wav')
                     pygame.mixer.music.play(0)
                     print("the response is ok")
+                    # on_game -> correct
+                    client.publish(PUBLISH_LEDS, '0xCC')
                 else:
                     puntuation = 0
                     print("the response is NOT OK")
                     pygame.mixer.music.load('audio/no.wav')
                     pygame.mixer.music.play(0)
+                    # on_game -> incorrect
+                    client.publish(PUBLISH_LEDS, '0xDD')
                     # I save to previously repeat this little asshole the question:
                     bad_children.questions.append(
                         mode.words_right[children.current_question-1])
@@ -234,6 +243,12 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                     print("I finish the game")
                     # Finish if the children have end successfully
                     current_window = WINDOWS['FINISH']
+                    if len(bad_children.questions) > 0:
+                        # on_game -> end_false
+                        client.publish(PUBLISH_LEDS, '0xFF')
+                    else:
+                        # on_game -> ranking
+                        client.publish(PUBLISH_LEDS, '0xRR')
 
 
 def load_page_end(win, events, font, image_children, image_game_logo, image_tree):
@@ -261,12 +276,14 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                     current_window = WINDOWS['BAD_STUDENT']
                 else:
                     current_window = WINDOWS['RANKING']
+                    # on_game -> ranking
+                    client.publish(PUBLISH_LEDS, '0xRR')
 
-    #Print the branch:
+    # Print the branch:
     txt_game_name = font.render("Camino elegido:", True, (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (740, 310))
     win.blit(image_children, (860, 410))
-    #Print the balls:
+    # Print the balls:
     color_circle_wrong = parser.color_circle_wrong
     color_circle_right = parser.color_circle_right
     radio_circle = 20
@@ -277,7 +294,6 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     max_number_balls = int(mode.name)
     failed_words = len(bad_children.questions)
 
-    
     if (failed_words > 0):
         color = color_circle_wrong
         failed_words -= 1
@@ -286,23 +302,22 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     x_space = 80
     if (max_number_balls >= 4):
         for i in range(0, 4):
-            if i<3:
+            if i < 3:
                 circle_yes = pygame.draw.circle(
                     win, color, (350 + x_space*i, 200), radio_circle)
                 if (failed_words > 0):
                     color = color_circle_wrong
-                    failed_words-=1
+                    failed_words -= 1
                 else:
                     color = color_circle_right
-            else:                
+            else:
                 circle_yes = pygame.draw.circle(
-                    win, color, (350 + x_space , 350), radio_circle)
+                    win, color, (350 + x_space, 350), radio_circle)
                 if (failed_words > 0):
                     color = color_circle_wrong
-                    failed_words-=1
+                    failed_words -= 1
                 else:
                     color = color_circle_right
-
 
     if (max_number_balls >= 6):
         for i in range(0, 2):
@@ -310,7 +325,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 win, color, (400 + x_space*i, 275), radio_circle)
             if (failed_words > 0):
                 color = color_circle_wrong
-                failed_words-=1
+                failed_words -= 1
             else:
                 color = color_circle_right
     if (max_number_balls == 8):
@@ -319,7 +334,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 win, color, (350 + x_space*2*i, 350), radio_circle)
             if (failed_words > 0):
                 color = color_circle_wrong
-                failed_words-=1
+                failed_words -= 1
             else:
                 color = color_circle_right
 
@@ -383,13 +398,21 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
                 action = 2
             if action > 0:
                 # Remove the bad_children and continue the game:
-                if (bad_children.answers[bad_children.index]== response):
+                if (bad_children.answers[bad_children.index] == response):
                     bad_children.answers.pop(bad_children.index)
                     bad_children.questions.pop(bad_children.index)
                     bad_children.images.pop(bad_children.index)
-                    if (bad_children.index!=0):
-                        bad_children.index-=1
+                    if (bad_children.index != 0):
+                        bad_children.index -= 1
+                    pygame.mixer.music.load('audio/si.wav')
+                    pygame.mixer.music.play(0)
+                    # on_game -> correct
+                    client.publish(PUBLISH_LEDS, '0xCC')
                 else:
+                    pygame.mixer.music.load('audio/no.wav')
+                    pygame.mixer.music.play(0)
+                     # on_game -> incorrect
+                    client.publish(PUBLISH_LEDS, '0xDD')
                     if (len(bad_children.answers) > bad_children.index + 1):
                         bad_children.index += 1
                     else:
@@ -399,6 +422,12 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
                 if (len(bad_children.answers) == 0):
                     print("I finish the game")
                     current_window = WINDOWS['FINISH']
+                    if len(bad_children.questions) > 0:
+                            # on_game -> end_false
+                        client.publish(PUBLISH_LEDS, '0xFF')
+                    else:
+                        # on_game -> ranking
+                        client.publish(PUBLISH_LEDS, '0xRR')
                 else:
                     print("increase the current question")
 
@@ -412,7 +441,7 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
     win.blit(txt_surface, (100, 700))
     win.blit(image_children, (40, 700))
     win.blit(image_game_logo, (870, 30))
-  
+
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
@@ -425,7 +454,6 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
         txt_game_name = font.render(names[i], True, parser.letters_color)
         win.blit(txt_game_name, (360, 225 + offset))
         offset += 50
-    
 
     for event in events:
         if event.type == pygame.QUIT:
@@ -436,6 +464,7 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
                     current_window = WINDOWS['BAD_STUDENT']
                 else:
                     current_window = WINDOWS['RANKING']
+
 
 def main():
     global current_window, children, mode
@@ -457,9 +486,11 @@ def main():
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
-            load_page_login(win,  image, parser.font_primary, pygame.event.get(), client)
+            load_page_login(win,  image, parser.font_primary,
+                            pygame.event.get(), client)
         elif (current_window == WINDOWS['WAITING_TEACHER']):
-            load_page_waiting(win, parser.font_primary, image, pygame.event.get())
+            load_page_waiting(win, parser.font_primary,
+                              image, pygame.event.get())
         elif (current_window == WINDOWS['ON_GAME']):
             load_page_game(win, parser.font_secundary, image,
                            parser.game_logo, pygame.event.get(), client)
@@ -471,7 +502,7 @@ def main():
                                   parser.font_primary, image, parser.game_logo, image_tree)
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
-                                  parser.font_primary, image, parser.game_logo, image_tree)
+                              parser.font_primary, image, parser.game_logo, image_tree)
         # i = 0
         # while i < 1024:
         #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)

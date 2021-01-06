@@ -63,9 +63,10 @@ void reconnect()
          client.subscribe(MQTT_HOLA);
          client.subscribe(MQTT_ADIOS);
          client.subscribe(MQTT_LOVE);
-         client.subscribe(MQTT_TFG_START);
-         client.subscribe(MQTT_TFG_GAME);
-         client.subscribe(MQTT_TFG_END);
+         // client.subscribe(MQTT_TFG_START);
+         // client.subscribe(MQTT_TFG_GAME);
+         // client.subscribe(MQTT_TFG_END);
+         client.subscribe(MQTT_CHILDREN_MOVE);
       }
       else
       {
@@ -125,39 +126,53 @@ void callback(char *topic, byte *payload, unsigned int length)
       if (strstr((char *)(payload), "0xAA") != NULL)
       {
          state_machine = WAITING;
+         Serial.println("init -> waiting");
       }
       //waiting -> on_game
       if (strstr((char *)(payload), "0xBB") != NULL)
       {
          state_machine = ON_GAME;
+         Serial.println("waiting -> on_game");
       }
       //on_game -> correct
       if (strstr((char *)(payload), "0xCC") != NULL)
       {
          state_machine = CORRECT_ANSWER;
+         Serial.println("on_game -> correct");
       }
       //on_game -> incorrect
       if (strstr((char *)(payload), "0xDD") != NULL)
       {
          state_machine = INCORRECT_ANSWER;
+         Serial.println("on_game -> incorrect");
       }
       //on_game -> end_true
       if (strstr((char *)(payload), "0xEE") != NULL)
       {
+         Serial.println("on_game -> end_true");
          leds[0] = CRGB::Blue;
          FastLED.show();
       }
       //on_game -> end_false
       if (strstr((char *)(payload), "0xFF") != NULL)
       {
+         Serial.println("on_game -> end_false");
          leds[0] = CRGB::Red;
          FastLED.show();
       }
       //on_game -> ranking
       if (strstr((char *)(payload), "0xRR") != NULL)
       {
+         Serial.println("on_game -> ranking");
          state_machine = RANKING;
          leds[0] = CRGB::Purple;
+         FastLED.show();
+      }
+      if (strstr((char *)(payload), "RESET") != NULL)
+      {
+         Serial.println("RESET");
+         state_machine = INIT;
+         leds[0] = CRGB::White;
          FastLED.show();
       }
    }
@@ -230,7 +245,6 @@ void setup()
    uint64_t millix = millis();
    bool blink_status = true;
    //I first initialize the led to white:
-
    leds[0] = CRGB::White;
    FastLED.show();
 
@@ -244,12 +258,14 @@ void setup()
       case WAITING:
          if (millis() - millix >= BLINK_FRECUENCY)
          {
+            Serial.println("blink the waitting led");
             if (blink_status)
                leds[0] = CRGB::Black;
             else
                leds[0] = CRGB::Yellow;
             blink_status != blink_status;
             FastLED.show();
+            millix = millis();
          }
          break;
       case ON_GAME:
@@ -257,6 +273,7 @@ void setup()
       case CORRECT_ANSWER:
          for (int i = 0; i < 4; i++)
          {
+            Serial.println("blink the correct led");
             leds[0] = CRGB::Green;
             FastLED.show();
             delay(BLINK_FRECUENCY);
@@ -269,6 +286,7 @@ void setup()
       case INCORRECT_ANSWER:
          for (int i = 0; i < 4; i++)
          {
+            Serial.println("blink the wrong led");
             leds[0] = CRGB::Red;
             FastLED.show();
             delay(BLINK_FRECUENCY);
