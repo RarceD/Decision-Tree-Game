@@ -11,13 +11,24 @@ Every children is connected to the teacher's topic in order to receive the numbe
 The teacher is continously listenning all the childrens in order to make the ranking of the most fail words.
 An ESP32 is also connected to the listen topic of the children console, in every state machine of the children the embeded device is going to change the color of their leds ir order to indicate the status of the game.
 ### Pygame
-All the GUI is implemented using pygame and the data and color informations is introduce via a json file filled by a real teacher that can change over the diferent classes or acording the children evolution.
+All the GUI is implemented using pygame and the data and color informations is introduce via a <a href="https://github.com/RarceD/Decision-Tree-Game/blob/main/Child_Teacher/input.json">json file</a> filled by a real teacher that can change over the diferent classes or acording the children evolution.
 
 For simple execution there is a .bat file that can easily run the program and simulate multiple children.
 ## Images of the real game:
 ### Waiting other children: ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/tree/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="300"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="400"/>
 
-### On game ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="300"/>
+### On game 1: ###
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game.png" alt="drawing" width="400"/>
 
+### On game 2:  ###
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_2.png" alt="drawing" width="400"/>
+
+### On game 3:  ###
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_3.png" alt="drawing" width="400"/>
+
+### Ranking done: ###
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/end_game.png" alt="drawing" width="400"/>
+
+### Excel generated for the teacher: ###
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/output_excel.png" alt="drawing" width="500"/>
