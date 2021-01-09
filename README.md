@@ -19,4 +19,5 @@ For simple execution there is a .bat file that can easily run the program and si
 <img src="https://github.com/RarceD/Decision-Tree-Game/tree/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="300"/>
 
 ### On game ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/tree/main/Documentation/images_readme/on_game.png" alt="drawing" width="300"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="300"/>
+
