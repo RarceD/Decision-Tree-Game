@@ -31,13 +31,13 @@ current_window = 1111
 run = True
 modes = []
 global_clock = 0
-# for i in range(0,20):
-#     childrens.append('Bea Puente')
-#     progress.append(random.randint(0,8))
-# childrens.append('Rubén Arce')
-# progress.append(1)
-# childrens.append('Ubu Ventajas')
-# progress.append(0)
+for i in range(0,20):
+    childrens.append('Bea Puente')
+    progress.append(random.randint(0,8))
+childrens.append('Rubén Arce')
+progress.append(1)
+childrens.append('Ubu Ventajas')
+progress.append(0)
 
 
 class ChildrenEvaluation:
@@ -372,6 +372,10 @@ def load_page_game(win, font, events, image):
     pygame.draw.rect(win, parser['mode_buttons'], rec_close)
     txt_game_name = font.render("X", True,  parser['letters'])
     win.blit(txt_game_name, (805, 20))
+    
+    font_new = pygame.font.Font(None, 42)
+    txt_game_name = font_new.render(str(global_clock), True, (221, 223, 212))
+    win.blit(txt_game_name, (500, 720))
     for event in events:
         if event.type == pygame.QUIT:
             run = False
@@ -430,7 +434,7 @@ def main():
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= 1):
             timer_update_screen = int(round(time.time()))
             global_clock += 1
-            # print("tick")
+
 
 
 if __name__ == '__main__':

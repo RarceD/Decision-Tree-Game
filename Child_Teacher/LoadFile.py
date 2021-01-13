@@ -143,8 +143,8 @@ class LoadFile():
             self.branche_route_wrong, branch_dim)
 
         # The font:
-        self.font_primary = pygame.font.Font(self.font_primary, 52)
-        self.font_secundary = pygame.font.Font(self.font_secundary, 52)
+        self.font_primary = pygame.font.Font('fonts/' + self.font_primary, 52)
+        self.font_secundary = pygame.font.Font('fonts/' + self.font_secundary, 52)
         # The global game logo:
         self.game_logo = pygame.image.load('images/' + self.game_logo)
         self.game_logo = pygame.transform.scale(self.game_logo, (100, 100))
