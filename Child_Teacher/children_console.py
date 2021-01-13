@@ -288,7 +288,11 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     # Print the branch:
     txt_game_name = font.render("Camino elegido:", True, (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (740, 310))
-    win.blit(image_children, (860, 410))
+    failed_words = len(bad_children.questions)
+    if failed_words>0:
+        win.blit(parser.branche_route_wrong, (860, 410))
+    else:
+        win.blit(parser.branche_route_right, (860, 410))
     # Print the balls:
     color_circle_wrong = parser.color_circle_wrong
     color_circle_right = parser.color_circle_right
@@ -296,10 +300,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     # Draw the tree
     offset = 0
     color = color_circle_wrong
-
     max_number_balls = int(mode.name)
-    failed_words = len(bad_children.questions)
-
     if (failed_words > 0):
         color = color_circle_wrong
         failed_words -= 1

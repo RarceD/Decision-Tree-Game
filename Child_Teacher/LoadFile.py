@@ -1,4 +1,5 @@
 import json
+import random
 
 class LoadFile():
     def __init__(self, input_file):
@@ -30,6 +31,8 @@ class LoadFile():
         self.sound_yes = ""
         self.sound_no = ""
         self.sound_ranking = ""
+        self.branche_route_right = ""
+        self.branche_route_wrong = ""
 
         with open(input_file) as json_file:
             data = json.load(json_file)
@@ -38,11 +41,10 @@ class LoadFile():
             self.game_name = data['global_images']["game_name"]
             self.game_logo = data['global_images']["game_logo"]
 
-
-            self.background_login = data['color_config_children'][ 'background_login']
-            self.background_waiting = data['color_config_children'][ 'background_waiting']
-            self.background_game = data['color_config_children'][ 'background_game']
-            self.background_end = data['color_config_children'][ 'background_end']
+            self.background_login = data['color_config_children']['background_login']
+            self.background_waiting = data['color_config_children']['background_waiting']
+            self.background_game = data['color_config_children']['background_game']
+            self.background_end = data['color_config_children']['background_end']
             self.background_bad_student = data['color_config_children']['background_bad_student']
             self.background_ranking = data['color_config_children']['background_ranking']
             # self.background = tuple(
@@ -51,7 +53,7 @@ class LoadFile():
             self.background_logo = data['color_config_children']['background_logo']
             self.background_logo = tuple(
                 map(int, str(self.background_logo)[1:-1].split(',')))
-                
+
             self.enter_button = data['color_config_children']['enter_button']
             self.enter_button = tuple(
                 map(int, str(self.enter_button)[1:-1].split(',')))
@@ -97,6 +99,10 @@ class LoadFile():
             self.sound_no = data['sound_config_children']['no']
             self.sound_enter = data['sound_config_children']['enter']
             self.sound_ranking = data['sound_config_children']['ranking']
+            # Final branches
+            self.branche_route_right = data['children_branches_images_wrong']['right']
+            r = random.randint(0, 8)
+            self.branche_route_wrong = data['children_branches_images_wrong']['wrong'][r]
 
     def parse_data(self, pygame):
         dimensions = (1024, 768)
@@ -124,9 +130,21 @@ class LoadFile():
             'images/' + self.background_ranking)
         self.background_ranking = pygame.transform.scale(
             self.background_ranking, dimensions)
+
+        branch_dim = (50, 50)
+        # The branches colors:
+        self.branche_route_right = pygame.image.load(
+            'images/branche_route/' + self.branche_route_right)
+        self.branche_route_right = pygame.transform.scale(
+            self.branche_route_right, branch_dim)
+        self.branche_route_wrong = pygame.image.load(
+            'images/branche_route/' + self.branche_route_wrong)
+        self.branche_route_wrong = pygame.transform.scale(
+            self.branche_route_wrong, branch_dim)
+
+        # The font:
         self.font_primary = pygame.font.Font(self.font_primary, 52)
         self.font_secundary = pygame.font.Font(self.font_secundary, 52)
         # The global game logo:
-        self.game_logo  = pygame.image.load('images/' + self.game_logo)
+        self.game_logo = pygame.image.load('images/' + self.game_logo)
         self.game_logo = pygame.transform.scale(self.game_logo, (100, 100))
-
