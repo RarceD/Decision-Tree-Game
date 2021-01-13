@@ -2,24 +2,9 @@
   "modes": [
     {
       "name": 4,
-      "words": [
-        "galdiolo",
-        "flor",
-        "palmera",
-        "bloso"
-      ],
-      "correct_word": [
-        false,
-        true,
-        true,
-        false
-      ],
-      "images": [
-        "gladiolo.jpg",
-        "flor.jpg",
-        "palmera.jpg",
-        "bolso.jpg"
-      ]
+      "words": ["galdiolo", "flor", "palmera", "bloso"],
+      "correct_word": [false, true, true, false],
+      "images": ["gladiolo.jpg", "flor.jpg", "palmera.jpg", "bolso.jpg"]
     },
     {
       "name": 6,
@@ -160,6 +145,17 @@
     "049-superhero.png",
     "050-superhero.png"
   ],
+  "children_branches_images_wrong": {
+    "wrong": [
+      "duck_icon.jpg",
+      "duck_icon.jpg",
+      "duck_icon.jpg",
+      "duck_icon.jpg",
+      "duck_icon.jpg",
+      "fruta.jpg"
+    ],
+    "right": "camino_bien.jpg"
+  },
   "global_images": {
     "game_name": "Nombre (no exit)",
     "game_logo": "game_logo.png"
@@ -178,7 +174,6 @@
     "background_end": "fondo_final.jpg",
     "background_bad_student": "fondo_page_3.jpg",
     "background_ranking": "ranking_page.jpg",
-
     "background_logo": "(23,23,13)",
     "enter_button": "(242, 132, 130)",
     "enter_button_text_color": "(23,23,13)",
@@ -194,5 +189,11 @@
     "color_circle_wrong": "(245, 117, 66)",
     "color_circle_right": "(38, 106, 189)",
     "radio_circle": 70
+  },
+  "sound_config_children": {
+    "yes": "si.wav",
+    "no": "no.wav",
+    "enter": "si.wav",
+    "ranking": "no.wav"
   }
 }

@@ -107,6 +107,8 @@ def load_page_login(win, image, font, events, client):
                     client.publish(PUBLISH_LEDS, '0xAA')
                     msg = "{\"uuid\":\""+children.name+"\",\"question\":0}"
                     client.publish(PUBLISH_TOPIC, msg)
+                    pygame.mixer.music.load('audio/'+parser.sound_enter)
+                    pygame.mixer.music.play(0)
                     print("Enter Press")
         if event.type == pygame.KEYDOWN:
             if True:
@@ -202,15 +204,15 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                 if (mode.words_wrong[children.current_question-1] == response):
                     puntuation = children.calculate_punctuation(
                         children.timer_running)
-                    pygame.mixer.music.load('audio/si.wav')
+                    pygame.mixer.music.load('audio/'+parser.sound_yes)
                     pygame.mixer.music.play(0)
-                    print("the response is ok")
+                    # print("the response is ok")
                     # on_game -> correct
                     client.publish(PUBLISH_LEDS, '0xCC')
                 else:
                     puntuation = 0
-                    print("the response is NOT OK")
-                    pygame.mixer.music.load('audio/no.wav')
+                    # print("the response is NOT OK")
+                    pygame.mixer.music.load('audio/'+parser.sound_no)
                     pygame.mixer.music.play(0)
                     # on_game -> incorrect
                     client.publish(PUBLISH_LEDS, '0xDD')
@@ -274,8 +276,12 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 print('move to final or repeat')
                 if len(bad_children.questions) > 0:
                     current_window = WINDOWS['BAD_STUDENT']
+                    pygame.mixer.music.load('audio/'+parser.sound_enter)
+                    pygame.mixer.music.play(0)
                 else:
                     current_window = WINDOWS['RANKING']
+                    pygame.mixer.music.load('audio/'+parser.sound_ranking)
+                    pygame.mixer.music.play(0)
                     # on_game -> ranking
                     client.publish(PUBLISH_LEDS, '0xRR')
 
@@ -404,14 +410,14 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
                     bad_children.images.pop(bad_children.index)
                     if (bad_children.index != 0):
                         bad_children.index -= 1
-                    pygame.mixer.music.load('audio/si.wav')
+                    pygame.mixer.music.load('audio/'+parser.sound_yes)
                     pygame.mixer.music.play(0)
                     # on_game -> correct
                     client.publish(PUBLISH_LEDS, '0xCC')
                 else:
-                    pygame.mixer.music.load('audio/no.wav')
+                    pygame.mixer.music.load('audio/'+parser.sound_no)
                     pygame.mixer.music.play(0)
-                     # on_game -> incorrect
+                    # on_game -> incorrect
                     client.publish(PUBLISH_LEDS, '0xDD')
                     if (len(bad_children.answers) > bad_children.index + 1):
                         bad_children.index += 1
@@ -423,11 +429,13 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
                     print("I finish the game")
                     current_window = WINDOWS['FINISH']
                     if len(bad_children.questions) > 0:
-                            # on_game -> end_false
+                        # on_game -> end_false
                         client.publish(PUBLISH_LEDS, '0xFF')
                     else:
                         # on_game -> ranking
                         client.publish(PUBLISH_LEDS, '0xRR')
+                        pygame.mixer.music.load('audio/'+parser.sound_ranking)
+                        pygame.mixer.music.play(0)
                 else:
                     print("increase the current question")
 
@@ -462,8 +470,12 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
             if input_enter.collidepoint(event.pos):
                 if len(bad_children.questions) > 0:
                     current_window = WINDOWS['BAD_STUDENT']
+                    pygame.mixer.music.load('audio/'+parser.sound_enter)
+                    pygame.mixer.music.play(0)
                 else:
                     current_window = WINDOWS['RANKING']
+                    pygame.mixer.music.load('audio/'+parser.sound_ranking)
+                    pygame.mixer.music.play(0)
 
 
 def main():
@@ -499,7 +511,7 @@ def main():
                           parser.font_primary, image, parser.game_logo, image_tree)
         elif (current_window == WINDOWS['BAD_STUDENT']):
             load_page_bad_student(win, pygame.event.get(),
-                                  parser.font_primary, image, parser.game_logo, image_tree)
+                                  parser.font_secundary, image, parser.game_logo, image_tree)
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
                               parser.font_primary, image, parser.game_logo, image_tree)

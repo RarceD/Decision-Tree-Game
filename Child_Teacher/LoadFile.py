@@ -26,6 +26,10 @@ class LoadFile():
         self.radio_circle = 0
         self.font_primary = ""
         self.font_secondary = ""
+        self.sound_enter = ""
+        self.sound_yes = ""
+        self.sound_no = ""
+        self.sound_ranking = ""
 
         with open(input_file) as json_file:
             data = json.load(json_file)
@@ -88,6 +92,11 @@ class LoadFile():
                 map(int, str(self.color_circle_right)[1:-1].split(',')))
 
             self.radio_circle = data['color_config_children']['radio_circle']
+            # The sound imported:
+            self.sound_yes = data['sound_config_children']['yes']
+            self.sound_no = data['sound_config_children']['no']
+            self.sound_enter = data['sound_config_children']['enter']
+            self.sound_ranking = data['sound_config_children']['ranking']
 
     def parse_data(self, pygame):
         dimensions = (1024, 768)
@@ -120,3 +129,4 @@ class LoadFile():
         # The global game logo:
         self.game_logo  = pygame.image.load('images/' + self.game_logo)
         self.game_logo = pygame.transform.scale(self.game_logo, (100, 100))
+
