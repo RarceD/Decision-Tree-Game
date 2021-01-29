@@ -54,3 +54,18 @@ class Children:
         self.total_punctuation += punctuation
         return punctuation
 
+
+class ChildrenEvaluation:
+    def __init__(self, name, words):
+        self.words = words
+        self.name = name
+        self.fails = []
+        self.final_time = 0
+        self.final_punctuation = 0
+
+    def print_itself(self):
+        print('++> ', self.name)
+        print('  words:', self.words)
+        print('  fails: ', self.fails)
+        print('  final_time: ', self.final_time)
+        print('  final_punctuation: ', self.final_punctuation)

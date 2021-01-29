@@ -163,11 +163,19 @@
     "game_logo": "game_logo.png"
   },
   "color_config_teacher": {
-    "background": "(49, 49, 79)",
-    "children_background": "(159, 159, 237)",
-    "mode_buttons": "(222, 255, 251)",
-    "letters": "(61, 2, 12)",
-    "progress_bar": "(87, 3, 135)"
+    "waiting_children_background": "fondo_page_1.jpg",
+    "waiting_children_name_container": "(21, 221, 12)",
+    "waiting_children_buttons_back": "(1, 2, 45)",
+    "waiting_children_letter": "(200,9, 9)",
+    "on_game_background": "fondo_page_2.jpg",
+    "on_game_name_container": "(221, 212, 212)",
+    "on_game_letter": "(161,252, 212)",
+    "on_game_progress_bar_ok": "(87, 3, 225)",
+    "on_game_progress_bar_wrong": "(227, 3, 35)",
+    
+    "end_game_background": "fondo_page_3.jpg",
+    "end_game_letter": "(161,252, 212)"
+
   },
   "color_config_children": {
     "background_login": "fondo_page_1.jpg",

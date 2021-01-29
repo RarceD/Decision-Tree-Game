@@ -1,7 +1,7 @@
 import pygame
 import json
 import paho.mqtt.client as mqtt
-from ModeClass import Mode
+from ModeClass import Mode, ChildrenEvaluation
 import random
 import time
 import xlsxwriter
@@ -19,44 +19,32 @@ WINDOWS = {
     'FINISH': 3,
 }
 parser = {
-    "game_name": "",
-    "game_logo": "",
-    "background": "",
-    "mode_buttons": "",
-    "children_background": "",
-    "letters": "",
-    "progress_bar": ""
+    "waiting_children_background": "",
+    "waiting_children_name_container": "",
+    "waiting_children_buttons_back": "",
+    "waiting_children_letter": "",
+    "on_game_background": "",
+    "on_game_name_container": "",
+    "on_game_letter": "",
+    "on_game_progress_bar_ok": "",
+    "on_game_progress_bar_wrong": "",
+    "end_game_background": "",
+    "end_game_letter": "",
 }
 current_window = 1111
 run = True
 modes = []
 global_clock = 0
-for i in range(0,20):
+for i in range(0, 20):
     childrens.append('Bea Puente')
-    progress.append(random.randint(0,8))
+    progress.append(random.randint(0, 3))
 childrens.append('Rubén Arce')
 progress.append(1)
 childrens.append('Ubu Ventajas')
 progress.append(0)
 
 
-class ChildrenEvaluation:
-    def __init__(self, name, words):
-        self.words = words
-        self.name = name
-        self.fails = []
-        self.final_time = 0
-        self.final_punctuation = 0
-
-    def print_itself(self):
-        print('++> ', self.name)
-        print('  words:', self.words)
-        print('  fails: ', self.fails)
-        print('  final_time: ', self.final_time)
-        print('  final_punctuation: ', self.final_punctuation)
-
-
-def read_config_file(modes, parser):
+def read_config_file(modes, parser, pygame):
     with open('input.json') as json_file:
         data = json.load(json_file)
         for index, p in enumerate(data['modes']):
@@ -64,27 +52,55 @@ def read_config_file(modes, parser):
             modes[index].words_right.append(p["words"])
             modes[index].words_wrong.append(p["correct_word"])
             modes[index].images.append(p["images"])
+        dimensions = (1024, 768)
+        # First get the shared data:
         parser['game_name'] = data['global_images']['game_name']
         parser['game_logo'] = data['global_images']['game_logo']
-        parser['background'] = data['color_config_teacher']['background']
-        parser['background'] = tuple(
-            map(int, str(parser['background'])[1:-1].split(',')))
+        # Waiting data load:
+        parser['waiting_children_background'] = data['color_config_teacher']['waiting_children_background']
+        parser['waiting_children_background'] = pygame.image.load('images/' + parser['waiting_children_background'])
+        parser['waiting_children_background'] = pygame.transform.scale(parser['waiting_children_background'], dimensions)
 
-        parser['children_background'] = data['color_config_teacher']['children_background']
-        parser['children_background'] = tuple(
-            map(int, str(parser['children_background'])[1:-1].split(',')))
+        parser['waiting_children_name_container'] = data['color_config_teacher']['waiting_children_name_container']
+        parser['waiting_children_name_container'] = tuple(
+            map(int, str(parser['waiting_children_name_container'])[1:-1].split(',')))
 
-        parser['mode_buttons'] = data['color_config_teacher']['mode_buttons']
-        parser['mode_buttons'] = tuple(
-            map(int, str(parser['mode_buttons'])[1:-1].split(',')))
+        parser['waiting_children_buttons_back'] = data['color_config_teacher']['waiting_children_buttons_back']
+        parser['waiting_children_buttons_back'] = tuple(
+            map(int, str(parser['waiting_children_buttons_back'])[1:-1].split(',')))
 
-        parser['letters'] = data['color_config_teacher']['letters']
-        parser['letters'] = tuple(
-            map(int, str(parser['letters'])[1:-1].split(',')))
+        parser['waiting_children_letter'] = data['color_config_teacher']['waiting_children_letter']
+        parser['waiting_children_letter'] = tuple(
+            map(int, str(parser['waiting_children_letter'])[1:-1].split(',')))
 
-        parser['progress_bar'] = data['color_config_teacher']['progress_bar']
-        parser['progress_bar'] = tuple(
-            map(int, str(parser['progress_bar'])[1:-1].split(',')))
+        # Waiting data load:
+        parser['on_game_background'] = data['color_config_teacher']['on_game_background']
+        parser['on_game_background'] = pygame.image.load('images/' + parser['on_game_background'])
+        parser['on_game_background'] = pygame.transform.scale(parser['on_game_background'], dimensions)
+
+        parser['on_game_name_container'] = data['color_config_teacher']['on_game_name_container']
+        parser['on_game_name_container'] = tuple(
+            map(int, str(parser['on_game_name_container'])[1:-1].split(',')))
+
+        parser['on_game_letter'] = data['color_config_teacher']['on_game_letter']
+        parser['on_game_letter'] = tuple(
+            map(int, str(parser['waiting_children_letter'])[1:-1].split(',')))
+
+        # Waiting data load:
+        parser['end_game_background'] = data['color_config_teacher']['end_game_background']
+        parser['end_game_background'] = pygame.image.load('images/' + parser['end_game_background'])
+        parser['end_game_background'] = pygame.transform.scale(parser['end_game_background'], dimensions)
+
+        parser['end_game_letter'] = data['color_config_teacher']['end_game_letter']
+        parser['end_game_letter'] = tuple(
+            map(int, str(parser['end_game_letter'])[1:-1].split(',')))
+        parser['on_game_progress_bar_ok'] = data['color_config_teacher']['on_game_progress_bar_ok']
+        parser['on_game_progress_bar_ok'] = tuple(
+            map(int, str(parser['on_game_progress_bar_ok'])[1:-1].split(',')))
+        parser['on_game_progress_bar_wrong'] = data['color_config_teacher']['on_game_progress_bar_wrong']
+        parser['on_game_progress_bar_wrong'] = tuple(
+            map(int, str(parser['on_game_progress_bar_wrong'])[1:-1].split(',')))
+
     # for m in modes:
     #     m.print_itself()
     # print (parser)
@@ -275,25 +291,27 @@ def generate_excel(childrens, words, total_words_fails):
 def load_page_waitting_child(win, font, events, client, image):
     global run, current_window, childrens, progress, PUBLISH_TOPIC, modes,  parser
 
-    win.fill(parser['background'])
-    pygame.draw.rect(win, parser['children_background'], (100, 100, 500, 600))
-    txt_game_name = font.render(parser['game_name'], True,  (240, 240, 240))
+    # win.fill(0, 0, 0)
+    win.blit(parser['waiting_children_background'], (0, 0))
+    pygame.draw.rect(
+        win, parser['waiting_children_name_container'], (100, 100, 500, 600))
+    txt_game_name = font.render(parser['game_name'], True,  (0, 0, 0))
     win.blit(txt_game_name, (700, 50))
     win.blit(image, (900, 25))
 
     space_box = 200
-    pygame.draw.rect(win, parser['mode_buttons'], (700, 100, 200, 100))
-    txt_game_name = font.render("4 WORDS", True,  parser['letters'])
+    pygame.draw.rect(win, parser['waiting_children_buttons_back'], (700, 100, 200, 100))
+    txt_game_name = font.render("4 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140))
 
-    pygame.draw.rect(win, parser['mode_buttons'],
+    pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box, 200, 100))
-    txt_game_name = font.render("6 WORDS", True,  parser['letters'])
+    txt_game_name = font.render("6 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box))
 
-    pygame.draw.rect(win, parser['mode_buttons'],
+    pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box*2, 200, 100))
-    txt_game_name = font.render("8 WORDS", True,  parser['letters'])
+    txt_game_name = font.render("8 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box*2))
 
     for event in events:
@@ -327,7 +345,7 @@ def load_page_waitting_child(win, font, events, client, image):
     offset = 0
     spacing = 0
     for index, c in enumerate(childrens):
-        a = font.render(c, True, (0x00, 0x00, 0x00))
+        a = font.render(c, True, parser['waiting_children_letter'])
         win.blit(a, (150+spacing, 150 + offset))
         offset += 40
         if (index == 12):
@@ -340,20 +358,25 @@ def load_page_waitting_child(win, font, events, client, image):
 
 def load_page_game(win, font, events, image):
     global run, childrens, progress, current_window
-    win.fill(parser['background'])
+
+    win.blit(parser['on_game_background'], (0, 0))
+
+    txt_game_name = font.render(parser['game_name'], True,  (0, 0, 0))
+    win.blit(txt_game_name, (700, 50))
+    win.blit(image, (900, 25))
 
     # The list of childrens:
-    pygame.draw.rect(win, parser['children_background'], (50, 100, 900, 600))
+    pygame.draw.rect(win, parser['on_game_name_container'], (50, 100, 900, 600))
     offset = 0
     spacing = 0
     for index, c in enumerate(childrens):
-        a = font.render(c, True, parser['letters'])
+        a = font.render(c, True, parser['on_game_letter'])
         win.blit(a, (100+spacing, 150 + offset))
         r = 0
         while (r < int(progress[index])):
             pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
                                               spacing, 150 + offset, 20, 30))
-            pygame.draw.rect(win, parser['progress_bar'], (320 + r *
+            pygame.draw.rect(win, parser['on_game_progress_bar_ok'], (320 + r *
                                                            20+2+spacing, 150+2 + offset, 20-4, 30-4))
             r += 1
         offset += 40
@@ -365,14 +388,14 @@ def load_page_game(win, font, events, image):
         while (offset < int(p)):
             pygame.draw.rect(win, (0, 0, 0), (320 + offset * 20, 150, 20, 30))
             pygame.draw.rect(
-                win, parser['progress_bar'], (320 + offset * 20+2, 150+2, 20-4, 30-4))
+                win, parser['on_game_progress_bar_ok'], (320 + offset * 20+2, 150+2, 20-4, 30-4))
             offset += 1
 
     rec_close = pygame.Rect(800, 20, 40, 40)
-    pygame.draw.rect(win, parser['mode_buttons'], rec_close)
-    txt_game_name = font.render("X", True,  parser['letters'])
+    pygame.draw.rect(win, parser['on_game_progress_bar_ok'], rec_close)
+    txt_game_name = font.render("X", True,  parser['on_game_letter'])
     win.blit(txt_game_name, (805, 20))
-    
+
     font_new = pygame.font.Font(None, 42)
     txt_game_name = font_new.render(str(global_clock), True, (221, 223, 212))
     win.blit(txt_game_name, (500, 720))
@@ -412,18 +435,18 @@ def main():
     clock = pygame.time.Clock()
     current_window = WINDOWS['WAITING_CHILDRENS']
 
-    image = pygame.image.load('images/' + parser['game_logo'])
-    image = pygame.transform.scale(image, (50, 50))
+    image_logo = pygame.image.load('images/' + parser['game_logo'])
+    image_logo = pygame.transform.scale(image_logo, (50, 50))
     timer_update_screen = int(round(time.time()))
 
     while run:
         if current_window == WINDOWS['WAITING_CHILDRENS']:
             load_page_waitting_child(
-                win, font, pygame.event.get(), client, image)
+                win, font, pygame.event.get(), client, image_logo)
         elif current_window == WINDOWS['ON_GAME']:
-            load_page_game(win, font, pygame.event.get(), image)
+            load_page_game(win, font, pygame.event.get(), image_logo)
         elif current_window == WINDOWS['FINISH']:
-            load_page_end(win, font, pygame.event.get(), image)
+            load_page_end(win, font, pygame.event.get(), image_logo)
         i = 0
         # while i < 1024:
         #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
@@ -436,10 +459,9 @@ def main():
             global_clock += 1
 
 
-
 if __name__ == '__main__':
     pygame.init()
     client = connect_mqtt()
-    read_config_file(modes, parser)
+    read_config_file(modes, parser, pygame)
     main()
     pygame.quit()
