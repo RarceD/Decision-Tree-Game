@@ -11,8 +11,9 @@ PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
 childrens = []
 progress = []
+progress_colors = []
 children_evaluation = []
-
+max_number_questions = 0
 WINDOWS = {
     'WAITING_CHILDRENS': 0,
     'ON_GAME': 1,
@@ -35,13 +36,6 @@ current_window = 1111
 run = True
 modes = []
 global_clock = 0
-for i in range(0, 20):
-    childrens.append('Bea Puente')
-    progress.append(random.randint(0, 3))
-childrens.append('Rubén Arce')
-progress.append(1)
-childrens.append('Ubu Ventajas')
-progress.append(0)
 
 
 def read_config_file(modes, parser, pygame):
@@ -123,7 +117,7 @@ def connect_mqtt():
 
 
 def on_message(client, userdata, message):
-    global progress, childrens, children_evaluation
+    global progress, childrens, children_evaluation,progress_colors
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
@@ -142,11 +136,22 @@ def on_message(client, userdata, message):
             if (c.name == new_children):
                 points = parsed_json['punctuation']
                 children_evaluation[index].final_punctuation += int(points)
-                if (int(points) == 0):
-                    children_evaluation[index].fails.append("1")
-                else:
-                    children_evaluation[index].fails.append("0")
                 children_evaluation[index].final_time = global_clock
+                # Save in progress bar colors the 0 and 1 of the correct or incorrect responses
+                if (len(children_evaluation[index].progress_bar_colors)<=max_number_questions):
+                    if (int(points) == 0):
+                        children_evaluation[index].fails.append("1")
+                        children_evaluation[index].progress_bar_colors.append(1)
+                    else:
+                        children_evaluation[index].fails.append("0")
+                        children_evaluation[index].progress_bar_colors.append(0)
+                else:
+                    print("yes")
+                    for find_0 in children_evaluation[index].progress_bar_colors:
+                        if find_0 == 0:
+                            find_0 = 1
+                            print("remake", children_evaluation[index].progress_bar_colors)
+                            break
 
     else:
         if (len(childrens) > 24):
@@ -155,14 +160,12 @@ def on_message(client, userdata, message):
             question = parsed_json['question']
             childrens.append(new_children)
             progress.append(question)
+            progress_colors.append("2")
             # Evaluation part:
             a = ChildrenEvaluation(new_children, [])
+            a.progress_bar_colors.append(2)
             children_evaluation.append(a)
-
-    # print('childrens:',childrens)
-    # print('progress:',progress)
-    # for c in children_evaluation:
-    #     c.print_itself()
+            
 
 
 def generate_excel(childrens, words, total_words_fails):
@@ -289,7 +292,7 @@ def generate_excel(childrens, words, total_words_fails):
 
 
 def load_page_waitting_child(win, font, events, client, image):
-    global run, current_window, childrens, progress, PUBLISH_TOPIC, modes,  parser
+    global run, current_window, childrens, progress, PUBLISH_TOPIC, modes,  parser, max_number_questions
 
     # win.fill(0, 0, 0)
     win.blit(parser['waiting_children_background'], (0, 0))
@@ -322,13 +325,16 @@ def load_page_waitting_child(win, font, events, client, image):
             send_to_app = [False, 0, 0]
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 4, 0]
-                print("Mode 5")
+                max_number_questions = 4
+                print("Mode 4")
             if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 6, 1]
-                print("Mode 8")
+                max_number_questions = 6
+                print("Mode 6")
             if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 8, 2]
-                print("Mode 10")
+                max_number_questions = 8
+                print("Mode 8")
             if send_to_app[0]:
                 current_window = WINDOWS['ON_GAME']
                 data = {
@@ -357,7 +363,7 @@ def load_page_waitting_child(win, font, events, client, image):
 
 
 def load_page_game(win, font, events, image):
-    global run, childrens, progress, current_window
+    global run, childrens, progress, current_window, progress_colors
 
     win.blit(parser['on_game_background'], (0, 0))
 
@@ -369,31 +375,36 @@ def load_page_game(win, font, events, image):
     pygame.draw.rect(win, parser['on_game_name_container'], (50, 100, 900, 600))
     offset = 0
     spacing = 0
-    for index, c in enumerate(childrens):
-        a = font.render(c, True, parser['on_game_letter'])
+    r = 0
+    for index, c in enumerate(children_evaluation):
+        a = font.render(str(childrens[index]), True, parser['on_game_letter'])
         win.blit(a, (100+spacing, 150 + offset))
-        r = 0
-        while (r < int(progress[index])):
-            pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
-                                              spacing, 150 + offset, 20, 30))
-            pygame.draw.rect(win, parser['on_game_progress_bar_ok'], (320 + r *
-                                                           20+2+spacing, 150+2 + offset, 20-4, 30-4))
-            r += 1
+        data_to_print = ""
+        data_to_print+=str(childrens[index])
+        for color in c.progress_bar_colors:
+            if (color == 0):
+                pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
+                                                spacing, 150 + offset, 20, 30))
+                data_to_print+= " [ 0 ]"
+                pygame.draw.rect(win, parser['on_game_progress_bar_wrong'], (320 + r *
+                                                            20+2+spacing, 150+2 + offset, 20-4, 30-4))
+            elif (color == 1):
+                pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
+                                                spacing, 150 + offset, 20, 30))
+                data_to_print+= " [ 1 ]"
+                pygame.draw.rect(win, parser['on_game_progress_bar_ok'], (320 + r *
+                                                            20+2+spacing, 150+2 + offset, 20-4, 30-4))
+            r+=1
+
         offset += 40
+        r=0
         if (index == 12):
             offset = 0
             spacing = 450
-    offset = 0
-    for index, p in enumerate(progress):
-        while (offset < int(p)):
-            pygame.draw.rect(win, (0, 0, 0), (320 + offset * 20, 150, 20, 30))
-            pygame.draw.rect(
-                win, parser['on_game_progress_bar_ok'], (320 + offset * 20+2, 150+2, 20-4, 30-4))
-            offset += 1
 
     rec_close = pygame.Rect(800, 20, 40, 40)
     pygame.draw.rect(win, parser['on_game_progress_bar_ok'], rec_close)
-    txt_game_name = font.render("X", True,  parser['on_game_letter'])
+    txt_game_name = font.render("X", True,  parser['on_game_progress_bar_ok'])
     win.blit(txt_game_name, (805, 20))
 
     font_new = pygame.font.Font(None, 42)
@@ -411,8 +422,7 @@ def load_page_game(win, font, events, image):
 
 def load_page_end(win, font, events, image):
     global run, childrens, progress
-    win.fill(parser['background'])
-
+    win.blit(parser['end_game_background'], (0, 0))
     for event in events:
         if event.type == pygame.QUIT:
             run = False

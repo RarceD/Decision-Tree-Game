@@ -62,6 +62,7 @@ class ChildrenEvaluation:
         self.fails = []
         self.final_time = 0
         self.final_punctuation = 0
+        self.progress_bar_colors = []
 
     def print_itself(self):
         print('++> ', self.name)
