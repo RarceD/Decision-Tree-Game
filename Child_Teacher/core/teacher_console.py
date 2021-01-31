@@ -78,7 +78,7 @@ def read_config_file(modes, parser, pygame):
 
         parser['on_game_letter'] = data['color_config_teacher']['on_game_letter']
         parser['on_game_letter'] = tuple(
-            map(int, str(parser['waiting_children_letter'])[1:-1].split(',')))
+            map(int, str(parser['on_game_letter'])[1:-1].split(',')))
 
         # Waiting data load:
         parser['end_game_background'] = data['color_config_teacher']['end_game_background']
@@ -141,10 +141,10 @@ def on_message(client, userdata, message):
                 if (len(children_evaluation[index].progress_bar_colors)<=max_number_questions):
                     if (int(points) == 0):
                         children_evaluation[index].fails.append("1")
-                        children_evaluation[index].progress_bar_colors.append(1)
+                        children_evaluation[index].progress_bar_colors.append(0)
                     else:
                         children_evaluation[index].fails.append("0")
-                        children_evaluation[index].progress_bar_colors.append(0)
+                        children_evaluation[index].progress_bar_colors.append(1)
                 else:
                     print("yes")
                     for find_0 in children_evaluation[index].progress_bar_colors:
@@ -423,18 +423,28 @@ def load_page_game(win, font, events, image):
 def load_page_end(win, font, events, image):
     global run, childrens, progress
     win.blit(parser['end_game_background'], (0, 0))
+    # Get the most point children and print it:
+
+    
+        
     for event in events:
         if event.type == pygame.QUIT:
             run = False
-            print("generate the excel and close all")
-            # Invent the data first:
-            commond_words = ["galdiolo", "flor", "palmera", "bloso"]
-            # Nor sure how to get the total fails:
-            total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
             for c in children_evaluation:
-                c.words = commond_words
-            generate_excel(children_evaluation,
-                           commond_words, total_words_fails)
+                print (c.print_itself())
+            import operator
+            sorted_children = sorted(children_evaluation, key=operator.attrgetter('final_punctuation'))
+            for c in children_evaluation:
+                print (c.print_itself())
+            # print("generate the excel and close all")
+            # # Invent the data first:
+            # commond_words = ["galdiolo", "flor", "palmera", "bloso"]
+            # # Nor sure how to get the total fails:
+            # total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
+            # for c in children_evaluation:
+            #     c.words = commond_words
+            # generate_excel(children_evaluation,
+            #                commond_words, total_words_fails)
 
 
 def main():
@@ -457,7 +467,7 @@ def main():
             load_page_game(win, font, pygame.event.get(), image_logo)
         elif current_window == WINDOWS['FINISH']:
             load_page_end(win, font, pygame.event.get(), image_logo)
-        i = 0
+        # i = 0
         # while i < 1024:
         #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
         #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
