@@ -420,22 +420,36 @@ def load_page_game(win, font, events, image):
                 current_window = WINDOWS['FINISH']
 
 
-def load_page_end(win, font, events, image):
-    global run, childrens, progress
-    win.blit(parser['end_game_background'], (0, 0))
-    # Get the most point children and print it:
+def get_ranking(children_evaluation):
+    ranking = dict()
+    max_punctuation = 0
+    for _ in range(0,len(children_evaluation)):
+        for c in children_evaluation:
+            if c.final_punctuation >= max_punctuation:
+                max_punctuation = c.final_punctuation
 
+        for c in children_evaluation:
+            if c.final_punctuation == max_punctuation:
+                ranking[c.name] = c.final_punctuation
+                children_evaluation.remove(c)
+        max_punctuation = 0
+    return ranking
+
+def load_page_end(win, font, events, image):
+    global run, childrens, progress, children_evaluation
+    win.blit(parser['end_game_background'], (0, 0))
     
-        
+    # TODO: Print the childrens in order:
+
+    print(ranking)
+
+    # Get the most point children and print it:
     for event in events:
         if event.type == pygame.QUIT:
             run = False
-            for c in children_evaluation:
-                print (c.print_itself())
-            import operator
-            sorted_children = sorted(children_evaluation, key=operator.attrgetter('final_punctuation'))
-            for c in children_evaluation:
-                print (c.print_itself())
+            ranking = get_ranking(children_evaluation)
+            print(ranking)
+
             # print("generate the excel and close all")
             # # Invent the data first:
             # commond_words = ["galdiolo", "flor", "palmera", "bloso"]

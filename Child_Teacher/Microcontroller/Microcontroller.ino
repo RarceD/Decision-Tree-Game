@@ -14,7 +14,7 @@ typedef enum
    END_GAME,
    RANKING
 } States;
-#define BLINK_FRECUENCY 500 //in miliseconds
+#define BLINK_FRECUENCY 100 //in miliseconds
 States state_machine = INIT;
 CRGB leds[1];
 WiFiClient wifiClient;
@@ -260,10 +260,15 @@ void setup()
          {
             Serial.println("blink the waitting led");
             if (blink_status)
+            {
+               blink_status = false;
                leds[0] = CRGB::Black;
+            }
             else
+            {
                leds[0] = CRGB::Yellow;
-            blink_status != blink_status;
+               blink_status = true;
+            }
             FastLED.show();
             millix = millis();
          }
