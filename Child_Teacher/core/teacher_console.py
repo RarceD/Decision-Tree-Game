@@ -5,7 +5,7 @@ from ModeClass import Mode, ChildrenEvaluation
 import random
 import time
 import xlsxwriter
-
+import copy
 
 PUBLISH_TOPIC = 'TFG_B/teacher'
 LISTEN_TOPIC = 'TFG_B/children'
@@ -52,8 +52,10 @@ def read_config_file(modes, parser, pygame):
         parser['game_logo'] = data['global_images']['game_logo']
         # Waiting data load:
         parser['waiting_children_background'] = data['color_config_teacher']['waiting_children_background']
-        parser['waiting_children_background'] = pygame.image.load('images/' + parser['waiting_children_background'])
-        parser['waiting_children_background'] = pygame.transform.scale(parser['waiting_children_background'], dimensions)
+        parser['waiting_children_background'] = pygame.image.load(
+            'images/' + parser['waiting_children_background'])
+        parser['waiting_children_background'] = pygame.transform.scale(
+            parser['waiting_children_background'], dimensions)
 
         parser['waiting_children_name_container'] = data['color_config_teacher']['waiting_children_name_container']
         parser['waiting_children_name_container'] = tuple(
@@ -69,8 +71,10 @@ def read_config_file(modes, parser, pygame):
 
         # Waiting data load:
         parser['on_game_background'] = data['color_config_teacher']['on_game_background']
-        parser['on_game_background'] = pygame.image.load('images/' + parser['on_game_background'])
-        parser['on_game_background'] = pygame.transform.scale(parser['on_game_background'], dimensions)
+        parser['on_game_background'] = pygame.image.load(
+            'images/' + parser['on_game_background'])
+        parser['on_game_background'] = pygame.transform.scale(
+            parser['on_game_background'], dimensions)
 
         parser['on_game_name_container'] = data['color_config_teacher']['on_game_name_container']
         parser['on_game_name_container'] = tuple(
@@ -82,8 +86,10 @@ def read_config_file(modes, parser, pygame):
 
         # Waiting data load:
         parser['end_game_background'] = data['color_config_teacher']['end_game_background']
-        parser['end_game_background'] = pygame.image.load('images/' + parser['end_game_background'])
-        parser['end_game_background'] = pygame.transform.scale(parser['end_game_background'], dimensions)
+        parser['end_game_background'] = pygame.image.load(
+            'images/' + parser['end_game_background'])
+        parser['end_game_background'] = pygame.transform.scale(
+            parser['end_game_background'], dimensions)
 
         parser['end_game_letter'] = data['color_config_teacher']['end_game_letter']
         parser['end_game_letter'] = tuple(
@@ -117,7 +123,7 @@ def connect_mqtt():
 
 
 def on_message(client, userdata, message):
-    global progress, childrens, children_evaluation,progress_colors
+    global progress, childrens, children_evaluation, progress_colors
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
@@ -138,19 +144,22 @@ def on_message(client, userdata, message):
                 children_evaluation[index].final_punctuation += int(points)
                 children_evaluation[index].final_time = global_clock
                 # Save in progress bar colors the 0 and 1 of the correct or incorrect responses
-                if (len(children_evaluation[index].progress_bar_colors)<=max_number_questions):
+                if (len(children_evaluation[index].progress_bar_colors) <= max_number_questions):
                     if (int(points) == 0):
                         children_evaluation[index].fails.append("1")
-                        children_evaluation[index].progress_bar_colors.append(0)
+                        children_evaluation[index].progress_bar_colors.append(
+                            0)
                     else:
                         children_evaluation[index].fails.append("0")
-                        children_evaluation[index].progress_bar_colors.append(1)
+                        children_evaluation[index].progress_bar_colors.append(
+                            1)
                 else:
                     print("yes")
                     for find_0 in children_evaluation[index].progress_bar_colors:
                         if find_0 == 0:
                             find_0 = 1
-                            print("remake", children_evaluation[index].progress_bar_colors)
+                            print(
+                                "remake", children_evaluation[index].progress_bar_colors)
                             break
 
     else:
@@ -165,7 +174,9 @@ def on_message(client, userdata, message):
             a = ChildrenEvaluation(new_children, [])
             a.progress_bar_colors.append(2)
             children_evaluation.append(a)
-            
+
+    for i in children_evaluation:
+        i.print_itself()
 
 
 def generate_excel(childrens, words, total_words_fails):
@@ -303,18 +314,22 @@ def load_page_waitting_child(win, font, events, client, image):
     win.blit(image, (900, 25))
 
     space_box = 200
-    pygame.draw.rect(win, parser['waiting_children_buttons_back'], (700, 100, 200, 100))
-    txt_game_name = font.render("4 WORDS", True,  parser['waiting_children_letter'])
+    pygame.draw.rect(
+        win, parser['waiting_children_buttons_back'], (700, 100, 200, 100))
+    txt_game_name = font.render(
+        "4 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140))
 
     pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box, 200, 100))
-    txt_game_name = font.render("6 WORDS", True,  parser['waiting_children_letter'])
+    txt_game_name = font.render(
+        "6 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box))
 
     pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box*2, 200, 100))
-    txt_game_name = font.render("8 WORDS", True,  parser['waiting_children_letter'])
+    txt_game_name = font.render(
+        "8 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box*2))
 
     for event in events:
@@ -372,7 +387,8 @@ def load_page_game(win, font, events, image):
     win.blit(image, (900, 25))
 
     # The list of childrens:
-    pygame.draw.rect(win, parser['on_game_name_container'], (50, 100, 900, 600))
+    pygame.draw.rect(
+        win, parser['on_game_name_container'], (50, 100, 900, 600))
     offset = 0
     spacing = 0
     r = 0
@@ -380,24 +396,24 @@ def load_page_game(win, font, events, image):
         a = font.render(str(childrens[index]), True, parser['on_game_letter'])
         win.blit(a, (100+spacing, 150 + offset))
         data_to_print = ""
-        data_to_print+=str(childrens[index])
+        data_to_print += str(childrens[index])
         for color in c.progress_bar_colors:
             if (color == 0):
                 pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
-                                                spacing, 150 + offset, 20, 30))
-                data_to_print+= " [ 0 ]"
+                                                  spacing, 150 + offset, 20, 30))
+                data_to_print += " [ 0 ]"
                 pygame.draw.rect(win, parser['on_game_progress_bar_wrong'], (320 + r *
-                                                            20+2+spacing, 150+2 + offset, 20-4, 30-4))
+                                                                             20+2+spacing, 150+2 + offset, 20-4, 30-4))
             elif (color == 1):
                 pygame.draw.rect(win, (0, 0, 0), (320 + r * 20 +
-                                                spacing, 150 + offset, 20, 30))
-                data_to_print+= " [ 1 ]"
+                                                  spacing, 150 + offset, 20, 30))
+                data_to_print += " [ 1 ]"
                 pygame.draw.rect(win, parser['on_game_progress_bar_ok'], (320 + r *
-                                                            20+2+spacing, 150+2 + offset, 20-4, 30-4))
-            r+=1
+                                                                          20+2+spacing, 150+2 + offset, 20-4, 30-4))
+            r += 1
 
         offset += 40
-        r=0
+        r = 0
         if (index == 12):
             offset = 0
             spacing = 450
@@ -421,35 +437,37 @@ def load_page_game(win, font, events, image):
 
 
 def get_ranking(children_evaluation):
+    _children_evaluation = copy.copy(children_evaluation)
     ranking = dict()
     max_punctuation = 0
-    for _ in range(0,len(children_evaluation)):
-        for c in children_evaluation:
+    for _ in range(0, len(_children_evaluation)):
+        for c in _children_evaluation:
             if c.final_punctuation >= max_punctuation:
                 max_punctuation = c.final_punctuation
 
-        for c in children_evaluation:
+        for c in _children_evaluation:
             if c.final_punctuation == max_punctuation:
                 ranking[c.name] = c.final_punctuation
-                children_evaluation.remove(c)
+                _children_evaluation.remove(c)
         max_punctuation = 0
     return ranking
+
 
 def load_page_end(win, font, events, image):
     global run, childrens, progress, children_evaluation
     win.blit(parser['end_game_background'], (0, 0))
-    
-    # TODO: Print the childrens in order:
-
-    print(ranking)
-
-    # Get the most point children and print it:
+    ranking = get_ranking(children_evaluation)
+    offset = 0
+    for keys, values in ranking.items():
+        txt_game_name = font.render(str(values)+" - "+str(keys), True, parser['end_game_letter'])
+        win.blit(txt_game_name, (360, 225 + offset))
+        offset += 50
+        # Get the most point chi ldren and print it:
     for event in events:
         if event.type == pygame.QUIT:
             run = False
             ranking = get_ranking(children_evaluation)
             print(ranking)
-
             # print("generate the excel and close all")
             # # Invent the data first:
             # commond_words = ["galdiolo", "flor", "palmera", "bloso"]
