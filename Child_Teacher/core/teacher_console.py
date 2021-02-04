@@ -193,7 +193,7 @@ def generate_excel(childrens, words, total_words_fails):
     print('All the child names:', children_names)
     print('All children points :', children_punctuations)
     # I need all the words to be the same.... to check with B
-    print('Total fails :', total_words_fails)
+    # print('Total fails :', total_words_fails)
     print('Total times of the game :', total_words_times)
 
     # I create the csv:
@@ -220,12 +220,12 @@ def generate_excel(childrens, words, total_words_fails):
         worksheet.write(row, col+1, total_words_times[index])
         worksheet.write(row, col+2, children_punctuations[index])
         row += 1
-    row = 1
-    col = 6
-    for index, c in enumerate(words):
-        worksheet.write(row, col, c)
-        worksheet.write(row, col+1, total_words_fails[index])
-        row += 1
+    # row = 1
+    # col = 6
+    # for index, c in enumerate(words):
+    #     worksheet.write(row, col, c)
+    #     worksheet.write(row, col+1, total_words_fails[index])
+    #     row += 1
     row = 1
     col = 9
     for index, c in enumerate(childrens):
@@ -459,7 +459,8 @@ def load_page_end(win, font, events, image):
     ranking = get_ranking(children_evaluation)
     offset = 0
     for keys, values in ranking.items():
-        txt_game_name = font.render(str(values)+" - "+str(keys), True, parser['end_game_letter'])
+        txt_game_name = font.render(
+            str(values)+" - "+str(keys), True, parser['end_game_letter'])
         win.blit(txt_game_name, (360, 225 + offset))
         offset += 50
         # Get the most point chi ldren and print it:
@@ -468,13 +469,13 @@ def load_page_end(win, font, events, image):
             run = False
             ranking = get_ranking(children_evaluation)
             print(ranking)
-            # print("generate the excel and close all")
-            # # Invent the data first:
-            # commond_words = ["galdiolo", "flor", "palmera", "bloso"]
-            # # Nor sure how to get the total fails:
-            # total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
-            # for c in children_evaluation:
-            #     c.words = commond_words
+            print("generate the excel and close all")
+            # Invent the data first:
+            commond_words = ["galdiolo", "flor", "palmera", "bloso"]
+            # Nor sure how to get the total fails:
+            total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
+            for c in children_evaluation:
+                c.words = commond_words
             # generate_excel(children_evaluation,
             #                commond_words, total_words_fails)
 
@@ -490,7 +491,7 @@ def main():
     image_logo = pygame.image.load('images/' + parser['game_logo'])
     image_logo = pygame.transform.scale(image_logo, (50, 50))
     timer_update_screen = int(round(time.time()))
-
+    time_send_ranking = int(round(time.time()))
     while run:
         if current_window == WINDOWS['WAITING_CHILDRENS']:
             load_page_waitting_child(
@@ -509,6 +510,13 @@ def main():
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= 1):
             timer_update_screen = int(round(time.time()))
             global_clock += 1
+        if (current_window != WINDOWS['WAITING_CHILDRENS']and int(round(time.time())) - time_send_ranking >= 5):
+            time_send_ranking = int(round(time.time()))
+            rank = get_ranking(children_evaluation)
+            update_rank = {}
+            for keys, values in rank.items():
+                update_rank[keys] = values
+            client.publish(PUBLISH_TOPIC,json.dumps(update_rank))
 
 
 if __name__ == '__main__':
