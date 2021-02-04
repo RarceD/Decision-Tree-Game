@@ -513,9 +513,13 @@ def main():
         if (current_window != WINDOWS['WAITING_CHILDRENS']and int(round(time.time())) - time_send_ranking >= 5):
             time_send_ranking = int(round(time.time()))
             rank = get_ranking(children_evaluation)
-            update_rank = {}
+            update_rank = {
+                'names':  [],
+                'points': []
+            }
             for keys, values in rank.items():
-                update_rank[keys] = values
+                update_rank['points'].append(values)
+                update_rank['names'].append(keys)
             client.publish(PUBLISH_TOPIC,json.dumps(update_rank))
 
 

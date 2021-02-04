@@ -19,6 +19,7 @@ WINDOWS = {
     'RANKING': 5
 }
 current_window = 1111
+ranking_names = []
 
 
 def connect_mqtt():
@@ -40,13 +41,19 @@ def on_message(client, userdata, message):
     # print("message topic=",message.topic)
     # print("message retain flag=",message.retain)
     # Example json: {"esp":"A1","beacon":[ {"uuid":5245,"distance":1.23},{"uuid":52345, "distance":1.23 }]}
-    global current_window, WINDOWS, mode, modes
+    global current_window, WINDOWS, mode, modes, ranking_names
     msg = str(message.payload.decode("utf-8"))
     # print("message received: ", msg)
     parsed_json = json.loads(msg)
-    # I received the questions and save them:
-    # print(parsed_json)
-    if (parsed_json['start']):
+
+    if 'names' in parsed_json:
+        for i in range(0, len(parsed_json['names'])):
+            if parsed_json['names'][i] in ranking_names:
+                nop = 0
+            else:
+                ranking_names.append(parsed_json['names'][i])
+
+    if 'start' in parsed_json:
         # waiting -> on_game
         client.publish(PUBLISH_LEDS, '0xBB')
         current_window = WINDOWS['ON_GAME']
@@ -58,17 +65,22 @@ def on_message(client, userdata, message):
             mode = modes[1]
         else:
             mode = modes[2]
-    # print("The selected mode is:" )
-    # mode.print_itself()
-    # I untidy the words in order to not repeat between childs:
-    ran_int_seed = random.randint(0, 25)
-    random.seed(ran_int_seed)
-    random.shuffle(mode.words_right)
-    random.seed(ran_int_seed)
-    random.shuffle(mode.words_wrong)
-    random.seed(ran_int_seed)
-    random.shuffle(mode.images)
-    # mode.print_itself()
+        # print("The selected mode is:" )
+        # mode.print_itself()
+        # I untidy the words in order to not repeat between childs:
+        ran_int_seed = random.randint(0, 25)
+        random.seed(ran_int_seed)
+        random.shuffle(mode.words_right)
+        random.seed(ran_int_seed)
+        random.shuffle(mode.words_wrong)
+        random.seed(ran_int_seed)
+        random.shuffle(mode.images)
+        # mode.print_itself()
+
+        # for p in parsed_json['names']:
+        #     print("insertt")
+        #     ranking_names.append(p)
+
 
 
 def load_page_login(win, image, font, events, client):
@@ -289,7 +301,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
     txt_game_name = font.render("Camino elegido:", True, (0x00, 0x00, 0x00))
     win.blit(txt_game_name, (740, 310))
     failed_words = len(bad_children.questions)
-    if failed_words>0:
+    if failed_words > 0:
         win.blit(parser.branche_route_wrong, (860, 410))
     else:
         win.blit(parser.branche_route_right, (860, 410))
@@ -442,7 +454,7 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
 
 
 def load_page_ranking(win, events, font, image_children, image_game_logo, image_tree):
-    global children, mode, bad_children, WINDOWS, current_window
+    global children, mode, bad_children, WINDOWS, current_window, ranking_names
     win.blit(parser.background_ranking, (0, 0))
     input_enter = pygame.Rect(750, 600, 140, 50)
     # Add the name of the children
@@ -457,12 +469,20 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
     win.blit(txt_game_name, (780, 590))
     txt_game_name = font.render("RANKING ALUMNOS:", True, parser.letters_color)
     win.blit(txt_game_name, (310, 110))
-    names = ['Bea', 'Ruben', 'Luís', 'Francisco ', 'Paquito']
+    # ranking_names = ['Bea', 'Ruben', 'Luís', 'Francisco ', 'Paquito']
     offset = 0
-    for i in range(0, 5):
-        txt_game_name = font.render(names[i], True, parser.letters_color)
+    name_index = 0
+    # print("load_page", ranking_names)
+    # ranking_names = ["hol", "al", "el"]
+    for i in range(0, len(ranking_names)):
+        txt_game_name = font.render(
+            ranking_names[i], True, parser.letters_color)
         win.blit(txt_game_name, (360, 225 + offset))
         offset += 50
+        # if name_index< 5:
+        #     name_index+=1
+        # else:
+        #     break
 
     for event in events:
         if event.type == pygame.QUIT:
