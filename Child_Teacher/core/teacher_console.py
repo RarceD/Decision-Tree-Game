@@ -143,6 +143,7 @@ def on_message(client, userdata, message):
                 points = parsed_json['punctuation']
                 children_evaluation[index].final_punctuation += int(points)
                 children_evaluation[index].final_time = global_clock
+                children_evaluation[index].words.append(parsed_json['words'])
                 # Save in progress bar colors the 0 and 1 of the correct or incorrect responses
                 if (len(children_evaluation[index].progress_bar_colors) <= max_number_questions):
                     if (int(points) == 0):
@@ -179,7 +180,7 @@ def on_message(client, userdata, message):
         i.print_itself()
 
 
-def generate_excel(childrens, words, total_words_fails):
+def generate_excel(childrens, words):
     words = childrens[0].words
     children_names = []
     children_punctuations = []
@@ -193,7 +194,6 @@ def generate_excel(childrens, words, total_words_fails):
     print('All the child names:', children_names)
     print('All children points :', children_punctuations)
     # I need all the words to be the same.... to check with B
-    # print('Total fails :', total_words_fails)
     print('Total times of the game :', total_words_times)
 
     # I create the csv:
@@ -341,15 +341,12 @@ def load_page_waitting_child(win, font, events, client, image):
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 4, 0]
                 max_number_questions = 4
-                print("Mode 4")
             if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 6, 1]
                 max_number_questions = 6
-                print("Mode 6")
             if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
                 send_to_app = [True, 8, 2]
                 max_number_questions = 8
-                print("Mode 8")
             if send_to_app[0]:
                 current_window = WINDOWS['ON_GAME']
                 data = {
@@ -473,7 +470,7 @@ def load_page_end(win, font, events, image):
             # Invent the data first:
             commond_words = ["galdiolo", "flor", "palmera", "bloso"]
             # Nor sure how to get the total fails:
-            total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
+            # total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
             for c in children_evaluation:
                 c.words = commond_words
             # generate_excel(children_evaluation,

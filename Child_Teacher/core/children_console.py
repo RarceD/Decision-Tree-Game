@@ -243,6 +243,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                 msg = {
                     "uuid": children.name,
                     "question": str(children.current_question),
+                    "words":str(mode.words_right[children.current_question-1]),
                     "punctuation": str(puntuation)
                 }
                 json_dump = json.dumps(msg)

@@ -1,3 +1,4 @@
+import random
 import xlsxwriter
 
 
@@ -9,21 +10,41 @@ class ChildrenEvaluation:
         self.final_time = 0
         self.final_punctuation = 0
 
+    def __repr__(self):
+        data = ""
+        data += "Name: " + self.name + "\n"
+        data += " - Words: "
+        for w in self.words:
+            data += str(w) + ", "
+        data += "\n"
 
-def generate_excel(childrens, words, total_words_fails):
+        return data
+
+
+def generate_excel(childrens):
     children_names = []
     children_punctuations = []
     total_words_times = []
-
+    # I get the most failed words:
+    total_words = childrens[0].words
+    total_failed = list()
+    for _ in total_words:
+        total_failed.append(0)
+    index = 0
     for c in childrens:
         children_names.append(c.name)
         children_punctuations.append(c.final_punctuation)
         total_words_times.append(c.final_time)
+        for w in c.words:
+            for i, t in enumerate(total_words):
+                if w == t:
+                    if c.fails[i] == 1:
+                        total_failed[i] += 1
 
     print('All the child names:', children_names)
+    print('Words to match:', total_words)
+    print('Total failed:', total_failed)
     print('All children points :', children_punctuations)
-    # I need all the words to be the same.... to check with B
-    print('Total fails :', total_words_fails)
     print('Total times of the game :', total_words_times)
 
     # I create the csv:
@@ -52,9 +73,9 @@ def generate_excel(childrens, words, total_words_fails):
         row += 1
     row = 1
     col = 6
-    for index, c in enumerate(words):
+    for index, c in enumerate(total_words):
         worksheet.write(row, col, c)
-        worksheet.write(row, col+1, total_words_fails[index])
+        worksheet.write(row, col+1, total_failed[index])
         row += 1
     row = 1
     col = 9
@@ -134,34 +155,35 @@ def generate_excel(childrens, words, total_words_fails):
 
 # Invent the data first:
 childrens = []
-commond_words = ["galdiolo", "flor", "palmera", "bloso"]
-# Nor sure how to get the total fails:
-total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
-for i in range(0, 5):
-    a = ChildrenEvaluation('Paco', commond_words)
-    a.final_punctuation = 67
-    a.final_time = 12
-    a.fails = [1, 0, 0, 1]
-    childrens.append(a)
-    a = ChildrenEvaluation('Pepe', commond_words)
-    a.final_punctuation = 35
-    a.final_time = 23
-    a.fails = [1, 0, 0, 1]
-    childrens.append(a)
-    a = ChildrenEvaluation('Bea', commond_words)
-    a.final_time = 54
-    a.final_punctuation = 24
-    a.fails = [1, 1, 1, 1]
-    childrens.append(a)
-    a = ChildrenEvaluation('Rubén', commond_words)
-    a.final_time = 32
-    a.final_punctuation = 47
-    a.fails = [0, 0, 0, 1]
-    childrens.append(a)
-    a = ChildrenEvaluation('María', commond_words)
-    a.final_time = 122
-    a.final_punctuation = 33
-    a.fails = [0, 1, 0, 1]
-    childrens.append(a)
+words = ["cholcolate", "esto es", "una prueba", "la verdad"]
 
-generate_excel(childrens, commond_words, total_words_fails)
+
+a = ChildrenEvaluation('Paco', words)
+a.final_punctuation = 67
+a.final_time = 12
+a.fails = [1, 0, 0, 1]
+childrens.append(a)
+a = ChildrenEvaluation('Pepe', words)
+a.final_punctuation = 35
+a.final_time = 23
+a.fails = [1, 0, 0, 1]
+childrens.append(a)
+words = ["una prueba", "la verdad", "cholcolate", "esto es"]
+random.seed(4)
+random.shuffle(words)
+a = ChildrenEvaluation('Bea', words)
+a.final_time = 54
+a.final_punctuation = 24
+a.fails = [1, 1, 1, 1]
+childrens.append(a)
+random.seed(3)
+random.shuffle(words)
+words = ["una prueba", "cholcolate", "la verdad" "esto es"]
+a = ChildrenEvaluation('Rubén', words)
+a.final_time = 32
+a.final_punctuation = 47
+a.fails = [0, 0, 0, 1]
+childrens.append(a)
+
+generate_excel(childrens)
+
