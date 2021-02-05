@@ -95,10 +95,10 @@ def generate_excel(childrens):
         row += 1
     # Children Time and punctuation:
     chart = workbook.add_chart({'type': 'column'})
-    chart.add_series({'categories': '=Sheet1!$B$2:$B$26',
-                      'values': '=Sheet1!$C$2:$C$26',
+    chart.add_series({'categories': '=Sheet1!$B$2:$B$'+str(len(childrens)+1),
+                      'values': '=Sheet1!$C$2:$C$'+str(len(childrens)+1),
                       'name': 'Tiempo (s)'})
-    chart.add_series({'values': '=Sheet1!$D$2:$D$26',
+    chart.add_series({'values': '=Sheet1!$D$2:$D$'+str(len(childrens)+1),
                       'name': 'Puntuación (pts)'})
     chart.set_title({'name': 'Puntuación y tiempos de niños'})
     chart.set_legend({'position': 'bottom'})
