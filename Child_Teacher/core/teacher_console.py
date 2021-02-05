@@ -179,21 +179,30 @@ def on_message(client, userdata, message):
     for i in children_evaluation:
         i.print_itself()
 
-
-def generate_excel(childrens, words):
-    words = childrens[0].words
+def generate_excel(childrens):
     children_names = []
     children_punctuations = []
     total_words_times = []
-
+    # I get the most failed words:
+    total_words = childrens[0].words
+    total_failed = list()
+    for _ in total_words:
+        total_failed.append(0)
+    index = 0
     for c in childrens:
         children_names.append(c.name)
         children_punctuations.append(c.final_punctuation)
         total_words_times.append(c.final_time)
+        for w in c.words:
+            for i, t in enumerate(total_words):
+                if w == t:
+                    if c.fails[i] == 1:
+                        total_failed[i] += 1
 
     print('All the child names:', children_names)
+    print('Words to match:', total_words)
+    print('Total failed:', total_failed)
     print('All children points :', children_punctuations)
-    # I need all the words to be the same.... to check with B
     print('Total times of the game :', total_words_times)
 
     # I create the csv:
@@ -220,12 +229,12 @@ def generate_excel(childrens, words):
         worksheet.write(row, col+1, total_words_times[index])
         worksheet.write(row, col+2, children_punctuations[index])
         row += 1
-    # row = 1
-    # col = 6
-    # for index, c in enumerate(words):
-    #     worksheet.write(row, col, c)
-    #     worksheet.write(row, col+1, total_words_fails[index])
-    #     row += 1
+    row = 1
+    col = 6
+    for index, c in enumerate(total_words):
+        worksheet.write(row, col, c)
+        worksheet.write(row, col+1, total_failed[index])
+        row += 1
     row = 1
     col = 9
     for index, c in enumerate(childrens):
@@ -244,10 +253,10 @@ def generate_excel(childrens, words):
         row += 1
     # Children Time and punctuation:
     chart = workbook.add_chart({'type': 'column'})
-    chart.add_series({'categories': '=Sheet1!$B$2:$B$26',
-                      'values': '=Sheet1!$C$2:$C$26',
+    chart.add_series({'categories': '=Sheet1!$B$2:$B$'+str(len(childrens)+1),
+                      'values': '=Sheet1!$C$2:$C$'+str(len(childrens)+1),
                       'name': 'Tiempo (s)'})
-    chart.add_series({'values': '=Sheet1!$D$2:$D$26',
+    chart.add_series({'values': '=Sheet1!$D$2:$D$'+str(len(childrens)+1),
                       'name': 'Puntuación (pts)'})
     chart.set_title({'name': 'Puntuación y tiempos de niños'})
     chart.set_legend({'position': 'bottom'})
@@ -465,16 +474,7 @@ def load_page_end(win, font, events, image):
         if event.type == pygame.QUIT:
             run = False
             ranking = get_ranking(children_evaluation)
-            print(ranking)
-            print("generate the excel and close all")
-            # Invent the data first:
-            commond_words = ["galdiolo", "flor", "palmera", "bloso"]
-            # Nor sure how to get the total fails:
-            # total_words_fails = [12, 4, 16, 3, 5, 2, 0, 2, 3, 5]
-            for c in children_evaluation:
-                c.words = commond_words
-            # generate_excel(children_evaluation,
-            #                commond_words, total_words_fails)
+            generate_excel(children_evaluation)
 
 
 def main():
