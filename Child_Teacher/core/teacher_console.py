@@ -424,13 +424,13 @@ def load_page_game(win, font, events, image):
             offset = 0
             spacing = 450
 
-    rec_close = pygame.Rect(800, 20, 40, 40)
-    pygame.draw.rect(win, parser['on_game_progress_bar_ok'], rec_close)
-    txt_game_name = font.render("X", True,  parser['on_game_progress_bar_ok'])
-    win.blit(txt_game_name, (805, 20))
+    rec_close = pygame.Rect(900, 100, 40, 40)
+    pygame.draw.rect(win, (200,200,200), rec_close)
+    txt_game_name = font.render("X", True,  (0,0,0))
+    win.blit(txt_game_name, (910, 110))
 
     font_new = pygame.font.Font(None, 42)
-    txt_game_name = font_new.render(str(global_clock), True, (221, 223, 212))
+    txt_game_name = font_new.render(str(global_clock), True, (0, 0, 0))
     win.blit(txt_game_name, (500, 720))
     for event in events:
         if event.type == pygame.QUIT:
