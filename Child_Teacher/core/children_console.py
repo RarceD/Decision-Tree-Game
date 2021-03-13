@@ -5,7 +5,17 @@ from ModeClass import Mode, Children, BadChildren
 from LoadFile import LoadFile
 import time
 import random
+import cv2
 
+face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+# To capture video from webcam.
+cap = cv2.VideoCapture(0)
+
+confirm_game_face = {
+    'RIGHT': False,
+    'LEFT': False,
+    'TIMES_HOLDING_ONE': 0
+}
 
 PUBLISH_TOPIC = 'TFG_B/children'
 PUBLISH_LEDS = 'TFG_B/children_move'
@@ -82,7 +92,6 @@ def on_message(client, userdata, message):
         #     ranking_names.append(p)
 
 
-
 def load_page_login(win, image, font, events, client):
     global current_window, WINDOWS, children, parser
     input_box = pygame.Rect(350, 500, 400, 50)
@@ -155,7 +164,7 @@ def load_page_waiting(win, font, image, events):
 
 
 def load_page_game(win, font, image_children,  image_game_logo, events, client):
-    global children, mode, current_window, parser, bad_children
+    global children, mode, current_window, parser, bad_children, confirm_game_face
     win.blit(parser.background_game, (0, 0))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
@@ -196,6 +205,77 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     txt_surface = font.render(children.name, True, color_letters)
     win.blit(txt_surface, (100, 700))
     win.blit(image_children, (40, 700))
+
+    continue_with_question = False
+    response = True
+    action = 0
+    if (confirm_game_face['RIGHT']):
+        confirm_game_face['RIGHT'] = False
+        confirm_game_face['TIMES_HOLDING_ONE'] = 0
+        response = False
+        action = 2
+        continue_with_question = True
+
+    if (confirm_game_face['LEFT']):
+        confirm_game_face['LEFT'] = False
+        confirm_game_face['TIMES_HOLDING_ONE'] = 0
+        response = True
+        action = 1
+        continue_with_question = True
+    if (continue_with_question):
+        if action > 0:
+            # Check if is ok or not
+            puntuation = 10
+            # Calculate the punctiation: given current time to response and an unknown protocol
+            if (mode.words_wrong[children.current_question-1] == response):
+                puntuation = children.calculate_punctuation(
+                    children.timer_running)
+                pygame.mixer.music.load('audio/'+parser.sound_yes)
+                pygame.mixer.music.play(0)
+                # print("the response is ok")
+                # on_game -> correct
+                client.publish(PUBLISH_LEDS, '0xCC')
+            else:
+                puntuation = 0
+                # print("the response is NOT OK")
+                pygame.mixer.music.load('audio/'+parser.sound_no)
+                pygame.mixer.music.play(0)
+                # on_game -> incorrect
+                client.publish(PUBLISH_LEDS, '0xDD')
+                # I save to previously repeat this little asshole the question:
+                bad_children.questions.append(
+                    mode.words_right[children.current_question-1])
+                bad_children.answers.append(
+                    mode.words_wrong[children.current_question-1])
+                bad_children.images.append(
+                    mode.images[children.current_question-1])
+                bad_children.print_itself()
+            # I restart the timer for the next question:
+            children.timer_running = 0
+            # Publish the results:
+            msg = {
+                "uuid": children.name,
+                "question": str(children.current_question),
+                "words": str(mode.words_right[children.current_question-1]),
+                "punctuation": str(puntuation)
+            }
+            json_dump = json.dumps(msg)
+            client.publish(PUBLISH_TOPIC, json_dump)
+            # Do I have to finish the game?:
+            if (children.current_question < mode.name):
+                children.current_question += 1
+                print("increase the current question")
+            else:
+                print("I finish the game")
+                # Finish if the children have end successfully
+                current_window = WINDOWS['FINISH']
+                if len(bad_children.questions) > 0:
+                    # on_game -> end_false
+                    client.publish(PUBLISH_LEDS, '0xFF')
+                else:
+                    # on_game -> ranking
+                    client.publish(PUBLISH_LEDS, '0xRR')
+
     for event in events:
         if event.type == pygame.QUIT:
             children.run = False
@@ -243,7 +323,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
                 msg = {
                     "uuid": children.name,
                     "question": str(children.current_question),
-                    "words":str(mode.words_right[children.current_question-1]),
+                    "words": str(mode.words_right[children.current_question-1]),
                     "punctuation": str(puntuation)
                 }
                 json_dump = json.dumps(msg)
@@ -360,7 +440,7 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
 
 
 def load_page_bad_student(win, events, font, image_children, image_game_logo, image_tree):
-    global children, mode, current_window, parser, bad_children
+    global children, mode, current_window, parser, bad_children, confirm_game_face
     win.fill((4, 4, 4))
     win.blit(parser.background_bad_student, (0, 0))
 
@@ -403,6 +483,58 @@ def load_page_bad_student(win, events, font, image_children, image_game_logo, im
     txt_surface = font.render(children.name, True, color_letters)
     win.blit(txt_surface, (100, 700))
     win.blit(image_children, (40, 700))
+
+    continue_with_question = False
+    response = True
+    action = 0
+    if (confirm_game_face['RIGHT']):
+        confirm_game_face['RIGHT'] = False
+        confirm_game_face['TIMES_HOLDING_ONE'] = 0
+        response = False
+        action = 2
+        continue_with_question = True
+
+    if (confirm_game_face['LEFT']):
+        confirm_game_face['LEFT'] = False
+        confirm_game_face['TIMES_HOLDING_ONE'] = 0
+        response = True
+        action = 1
+    if (continue_with_question):
+        if action > 0:
+            # Remove the bad_children and continue the game:
+            if (bad_children.answers[bad_children.index] == response):
+                bad_children.answers.pop(bad_children.index)
+                bad_children.questions.pop(bad_children.index)
+                bad_children.images.pop(bad_children.index)
+                if (bad_children.index != 0):
+                    bad_children.index -= 1
+                pygame.mixer.music.load('audio/'+parser.sound_yes)
+                pygame.mixer.music.play(0)
+                # on_game -> correct
+                client.publish(PUBLISH_LEDS, '0xCC')
+            else:
+                pygame.mixer.music.load('audio/'+parser.sound_no)
+                pygame.mixer.music.play(0)
+                # on_game -> incorrect
+                client.publish(PUBLISH_LEDS, '0xDD')
+                if (len(bad_children.answers) > bad_children.index + 1):
+                    bad_children.index += 1
+                else:
+                    current_window = WINDOWS['FINISH']
+            # Do I have to finish the game?:
+            if (len(bad_children.answers) == 0):
+                print("I finish the game")
+                current_window = WINDOWS['FINISH']
+                if len(bad_children.questions) > 0:
+                    # on_game -> end_false
+                    client.publish(PUBLISH_LEDS, '0xFF')
+                else:
+                    # on_game -> ranking
+                    client.publish(PUBLISH_LEDS, '0xRR')
+                    pygame.mixer.music.load('audio/'+parser.sound_ranking)
+                    pygame.mixer.music.play(0)
+            else:
+                print("increase the current question")
     for event in events:
         if event.type == pygame.QUIT:
             children.run = False
@@ -501,7 +633,7 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
 
 
 def main():
-    global current_window, children, mode
+    global current_window, children, mode, confirm_game_face
     clock = pygame.time.Clock()
     # Start the game on LOGIN:
     win = pygame.display.set_mode((1024, 768))
@@ -510,6 +642,10 @@ def main():
     image = pygame.image.load(
         'icon/' + str(parser.icon_child[random.randint(0, len(parser.icon_child)-1)]))
     image = pygame.transform.scale(image, (50, 50))
+    arrow_right = pygame.image.load('images/arrow_right.png')
+    arrow_right = pygame.transform.scale(arrow_right, (80, 80))
+    arrow_left = pygame.image.load('images/arrow_left.png')
+    arrow_left = pygame.transform.scale(arrow_left, (80, 80))
     # The tree final image:
     image_tree = pygame.image.load('images/' + 'tree.png')
     image_tree = pygame.transform.scale(image_tree, (600, 600))
@@ -537,12 +673,53 @@ def main():
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
                               parser.font_primary, image, parser.game_logo, image_tree)
-        # i = 0
-        # while i < 1024:
-        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-        #     i += 100
+        i = 0
+        while i < 1024:
+            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+            i += 100
+        # Read the frame
+        _, img = cap.read()
+        # Convert to grayscale
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        # Detect the faces
+        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+        # Draw the rectangle around each face
+        for (x, y, w, h) in faces:
+            cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            if (w > 95):
+                size_circle = 40
+                color_circle = (200, 0, 0)
+                print(confirm_game_face['TIMES_HOLDING_ONE'])
+                if (x < 100):
+                    # circle_no = pygame.draw.circle(win, color_circle, (900, 600), size_circle)
+                    win.blit(arrow_left, (900, 600))
+                    confirm_game_face['TIMES_HOLDING_ONE'] += 1
+                    # print("RIGHT")
+                elif (x > 300):
+                    win.blit(arrow_right, (100, 600))
+                    # circle_no = pygame.draw.circle(win, color_circle, (100, 600), size_circle)
+                    confirm_game_face['TIMES_HOLDING_ONE'] -= 1
+                if (confirm_game_face['TIMES_HOLDING_ONE'] > 15):
+                    confirm_game_face['TIMES_HOLDING_ONE'] = 0
+                    confirm_game_face['RIGHT'] = True
+                    confirm_game_face['LEFT'] = False
+                    print("CONFIRM RIGHT")
+                elif (confirm_game_face['TIMES_HOLDING_ONE'] < -15):
+                    confirm_game_face['TIMES_HOLDING_ONE'] = 0
+                    confirm_game_face['RIGHT'] = False
+                    confirm_game_face['LEFT'] = True
+                    print("CONFIRM LEFT")
 
+                    # print("LEFT")
+        # Display
+        cv2.imshow('img', img)
+        # Stop if escape key is pressed
+        k = cv2.waitKey(30) & 0xff
+        if k == 27:
+            # Release the VideoCapture object
+            cap.release()
+            break
         # I count the time on game for calculate children points
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
