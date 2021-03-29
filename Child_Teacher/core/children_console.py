@@ -71,7 +71,7 @@ def on_message(client, userdata, message):
         print(max_question_number)
         if (max_question_number == 4):
             mode = modes[0]
-        elif (max_question_number == 6):
+        elif (max_question_number == 8):
             mode = modes[1]
         else:
             mode = modes[2]
@@ -673,11 +673,11 @@ def main():
         elif (current_window == WINDOWS['RANKING']):
             load_page_ranking(win, pygame.event.get(),
                               parser.font_primary, image, parser.game_logo, image_tree)
-        i = 0
-        while i < 1024:
-            pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
-            pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
-            i += 100
+        # i = 0
+        # while i < 1024:
+        #     pygame.draw.line(win, (133, 128, 123), (i, 0), (i, 1024), 1)
+        #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
+        #     i += 100
         # Read the frame
         _, img = cap.read()
         # Convert to grayscale
@@ -686,17 +686,20 @@ def main():
         faces = face_cascade.detectMultiScale(gray, 1.1, 4)
         # Draw the rectangle around each face
         for (x, y, w, h) in faces:
-            cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+            c = 480
+            cv2.rectangle(img, (0, 0), (140, c), (0, 0, 255), 4)
+            cv2.rectangle(img, (500, 0), (640, c), (0, 0, 255), 4)
             if (w > 95):
+                cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
                 size_circle = 40
                 color_circle = (200, 0, 0)
-                print(confirm_game_face['TIMES_HOLDING_ONE'])
-                if (x < 100):
+                # print(confirm_game_face['TIMES_HOLDING_ONE'])
+                if (x + w/2 < 100):
                     # circle_no = pygame.draw.circle(win, color_circle, (900, 600), size_circle)
                     win.blit(arrow_left, (900, 600))
                     confirm_game_face['TIMES_HOLDING_ONE'] += 1
                     # print("RIGHT")
-                elif (x > 300):
+                elif (x + w/2 > 500):
                     win.blit(arrow_right, (100, 600))
                     # circle_no = pygame.draw.circle(win, color_circle, (100, 600), size_circle)
                     confirm_game_face['TIMES_HOLDING_ONE'] -= 1
@@ -713,7 +716,7 @@ def main():
 
                     # print("LEFT")
         # Display
-        cv2.imshow('img', img)
+        cv2.imshow('B', img)
         # Stop if escape key is pressed
         k = cv2.waitKey(30) & 0xff
         if k == 27:

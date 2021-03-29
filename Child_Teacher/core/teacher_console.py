@@ -155,12 +155,11 @@ def on_message(client, userdata, message):
                         children_evaluation[index].progress_bar_colors.append(
                             1)
                 else:
-                    print("yes")
+                    # print("yes")
                     for find_0 in children_evaluation[index].progress_bar_colors:
                         if find_0 == 0:
                             find_0 = 1
-                            print(
-                                "remake", children_evaluation[index].progress_bar_colors)
+                            # print("remake", children_evaluation[index].progress_bar_colors)
                             break
 
     else:
@@ -291,7 +290,7 @@ def generate_excel(childrens):
             position.append(i*15)
         row[0] += 5
         row[1] += 5
-    print(position)
+    # print(position)
 
     for index, c in enumerate(childrens):
         chart = workbook.add_chart({'type': 'column'})
@@ -326,19 +325,19 @@ def load_page_waitting_child(win, font, events, client, image):
     pygame.draw.rect(
         win, parser['waiting_children_buttons_back'], (700, 100, 200, 100))
     txt_game_name = font.render(
-        "4 WORDS", True,  parser['waiting_children_letter'])
+        "6 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140))
 
     pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box, 200, 100))
     txt_game_name = font.render(
-        "6 WORDS", True,  parser['waiting_children_letter'])
+        "8 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box))
 
     pygame.draw.rect(win, parser['waiting_children_buttons_back'],
                      (700, 100 + space_box*2, 200, 100))
     txt_game_name = font.render(
-        "8 WORDS", True,  parser['waiting_children_letter'])
+        "12 WORDS", True,  parser['waiting_children_letter'])
     win.blit(txt_game_name, (750, 140 + space_box*2))
 
     for event in events:
@@ -348,14 +347,14 @@ def load_page_waitting_child(win, font, events, client, image):
             # If the user clicked on the  rect.
             send_to_app = [False, 0, 0]
             if pygame.Rect(700, 100, 200, 100).collidepoint(event.pos):
-                send_to_app = [True, 4, 0]
-                max_number_questions = 4
-            if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
-                send_to_app = [True, 6, 1]
+                send_to_app = [True, 6, 0]
                 max_number_questions = 6
-            if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
-                send_to_app = [True, 8, 2]
+            if pygame.Rect(700, 100 + space_box, 200, 100).collidepoint(event.pos):
+                send_to_app = [True, 8, 1]
                 max_number_questions = 8
+            if pygame.Rect(700, 100 + space_box*2, 200, 100).collidepoint(event.pos):
+                send_to_app = [True, 12, 2]
+                max_number_questions = 12
             if send_to_app[0]:
                 current_window = WINDOWS['ON_GAME']
                 data = {
