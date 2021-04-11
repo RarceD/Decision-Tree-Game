@@ -69,7 +69,7 @@ def on_message(client, userdata, message):
         current_window = WINDOWS['ON_GAME']
         max_question_number = parsed_json['mode']
         print(max_question_number)
-        if (max_question_number == 4):
+        if (max_question_number == 6):
             mode = modes[0]
         elif (max_question_number == 8):
             mode = modes[1]
@@ -111,11 +111,12 @@ def load_page_login(win, image, font, events, client):
     pygame.draw.rect(win, parser.enter_button_text_color, input_box, 5)
     pygame.draw.rect(win, parser.enter_button, input_enter)
 
-    pygame.draw.rect(win, parser.background_logo, game_name)
+    # pygame.draw.rect(win, parser.background_logo, game_name)
+    win.blit(parser.background_logo, (170, 100))
     txt_game_name = font.render(parser.game_name, True, parser.letters_color)
-    win.blit(txt_game_name, (350, 220))
+    # win.blit(txt_game_name, (350, 210))
     txt_game_name = font.render("Enter", True, (0xFF, 0xFF, 0xFF))
-    win.blit(txt_game_name, (460, 610))
+    win.blit(txt_game_name, (460, 600))
     win.blit(image, (280, 500))
     for event in events:
         if event.type == pygame.QUIT:
@@ -147,7 +148,7 @@ def load_page_waiting(win, font, image, events):
 
     win.blit(parser.background_waiting, (0, 0))
     # Render the current text.
-    pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
+    # pygame.draw.rect(win, parser.background_logo, (150, 200, 700, 200), 2)
     color_letters = parser.letters_color
     txt_surface = font.render(
         parser.waiting_children_font_up, True, color_letters)
@@ -428,10 +429,30 @@ def load_page_end(win, events, font, image_children, image_game_logo, image_tree
                 failed_words -= 1
             else:
                 color = color_circle_right
-    if (max_number_balls == 8):
+    if (max_number_balls >= 8):
         for i in range(0, 2):
             circle_yes = pygame.draw.circle(
                 win, color, (350 + x_space*2*i, 350), radio_circle)
+            if (failed_words > 0):
+                color = color_circle_wrong
+                failed_words -= 1
+            else:
+                color = color_circle_right
+    if (max_number_balls == 12):
+        for i in range(0, 4):
+            if i==0:
+                circle_yes = pygame.draw.circle(
+                    win, color, (320 , 275), radio_circle)
+            elif i==1:
+                circle_yes = pygame.draw.circle(
+                    win, color, (550 , 275), radio_circle)
+            elif i==2:
+                circle_yes = pygame.draw.circle(
+                    win, color, (270 , 350), radio_circle)
+            elif i==3:
+                circle_yes = pygame.draw.circle(
+                    win, color,  (585 , 350), radio_circle)
+
             if (failed_words > 0):
                 color = color_circle_wrong
                 failed_words -= 1

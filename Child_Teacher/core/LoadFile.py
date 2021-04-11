@@ -51,8 +51,8 @@ class LoadFile():
             #     map(int, str(self.background)[1:-1].split(',')))
 
             self.background_logo = data['color_config_children']['background_logo']
-            self.background_logo = tuple(
-                map(int, str(self.background_logo)[1:-1].split(',')))
+            # self.background_logo = tuple(
+            #     map(int, str(self.background_logo)[1:-1].split(',')))
 
             self.enter_button = data['color_config_children']['enter_button']
             self.enter_button = tuple(
@@ -106,6 +106,11 @@ class LoadFile():
 
     def parse_data(self, pygame):
         dimensions = (1024, 768)
+        self.background_logo = pygame.image.load(
+            'images/' + self.background_logo)
+        self.background_logo = pygame.transform.scale(
+            self.background_logo, (700,400))
+
         self.background_login = pygame.image.load(
             'images/' + self.background_login)
         self.background_login = pygame.transform.scale(
@@ -147,4 +152,4 @@ class LoadFile():
         self.font_secundary = pygame.font.Font('fonts/' + self.font_secundary, 52)
         # The global game logo:
         self.game_logo = pygame.image.load('images/' + self.game_logo)
-        self.game_logo = pygame.transform.scale(self.game_logo, (100, 100))
+        self.game_logo = pygame.transform.scale(self.game_logo, (140, 120))

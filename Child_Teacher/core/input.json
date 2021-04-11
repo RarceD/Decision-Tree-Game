@@ -1,10 +1,10 @@
 {
   "modes": [
     {
-      "name": 4,
-      "words": ["galdiolo", "flor", "palmera", "bloso"],
-      "correct_word": [false, true, true, false],
-      "images": ["gladiolo.jpg", "flor.jpg", "palmera.jpg", "bolso.jpg"]
+      "name": 6,
+      "words": ["galdiolo", "flor", "palmera", "bloso", "palmera", "bloso"],
+      "correct_word": [false, true, true, false, true, false],
+      "images": ["gladiolo.jpg", "flor.jpg", "palmera.jpg", "bolso.jpg","palmera.jpg", "bolso.jpg"]
     },
     {
       "name": 8,
@@ -162,7 +162,7 @@
     "right": "gato.png"
   },
   "global_images": {
-    "game_name": "Nombre (no exit)",
+    "game_name": "Treeguntas",
     "game_logo": "game_logo.png"
   },
   "color_config_teacher": {
@@ -187,7 +187,7 @@
     "background_end": "fondo_final.jpg",
     "background_bad_student": "fondo_page_3.jpg",
     "background_ranking": "ranking_page.jpg",
-    "background_logo": "(23,23,13)",
+    "background_logo": "game_init.png",
     "enter_button": "(242, 132, 130)",
     "enter_button_text_color": "(23,23,13)",
     "circle_button_yes_no_button": "(249,223,23)",
