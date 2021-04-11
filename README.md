@@ -1,5 +1,8 @@
 # Decision-Tree-Game
 
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_into.png" alt="drawing" width="600"/>
+
+
 ## Introduction
 Dyslexia is a common learning difficulty that can cause problems with reading, writing and spelling.
 It's a specific learning difficulty, which means it causes problems with certain abilities used for learning, such as reading and writing.
