@@ -676,6 +676,9 @@ def main():
     cap =  ""
     try:
         cap = cv2.VideoCapture(0)
+        _, img = cap.read()
+        # Convert to grayscale to break in case not find
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     except:
         CAMERA_MODE = True
         cap.release()
@@ -710,7 +713,7 @@ def main():
         #     i += 100
         # Read the frame
 
-        if (CAMERA_MODE):
+        if (not(CAMERA_MODE)):
             _, img = cap.read()
             # Convert to grayscale
             gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
