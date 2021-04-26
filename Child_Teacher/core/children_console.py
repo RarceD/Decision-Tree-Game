@@ -7,10 +7,6 @@ import time
 import random
 import cv2
 
-face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
-# To capture video from webcam.
-cap = cv2.VideoCapture(0)
-
 confirm_game_face = {
     'RIGHT': False,
     'LEFT': False,
@@ -674,6 +670,19 @@ def main():
     parser.parse_data(pygame)
     # Periodic task made with this timer:
     timer_update_screen = int(round(time.time()))
+    # To capture video from webcam.
+    face_cascade = cv2.CascadeClassifier('haarcascade_frontalface_default.xml')
+    CAMERA_MODE = False
+    cap =  ""
+    try:
+        cap = cv2.VideoCapture(0)
+    except:
+        CAMERA_MODE = True
+        cap.release()
+        cv2.destroyAllWindows()
+        print("bad")
+
+    print(CAMERA_MODE)
     while children.run:
         # Game state machine:
         if (current_window == WINDOWS['LOGIN']):
@@ -700,51 +709,55 @@ def main():
         #     pygame.draw.line(win, (133, 128, 123), (0, i), (1024, i), 1)
         #     i += 100
         # Read the frame
-        _, img = cap.read()
-        # Convert to grayscale
-        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-        # Detect the faces
-        faces = face_cascade.detectMultiScale(gray, 1.1, 4)
-        # Draw the rectangle around each face
-        for (x, y, w, h) in faces:
-            c = 480
-            cv2.rectangle(img, (0, 0), (140, c), (0, 0, 255), 4)
-            cv2.rectangle(img, (500, 0), (640, c), (0, 0, 255), 4)
-            if (w > 95):
-                cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
-                size_circle = 40
-                color_circle = (200, 0, 0)
-                # print(confirm_game_face['TIMES_HOLDING_ONE'])
-                if (x + w/2 < 100):
-                    # circle_no = pygame.draw.circle(win, color_circle, (900, 600), size_circle)
-                    win.blit(arrow_left, (900, 600))
-                    confirm_game_face['TIMES_HOLDING_ONE'] += 1
-                    # print("RIGHT")
-                elif (x + w/2 > 500):
-                    win.blit(arrow_right, (100, 600))
-                    # circle_no = pygame.draw.circle(win, color_circle, (100, 600), size_circle)
-                    confirm_game_face['TIMES_HOLDING_ONE'] -= 1
-                if (confirm_game_face['TIMES_HOLDING_ONE'] > 15):
-                    confirm_game_face['TIMES_HOLDING_ONE'] = 0
-                    confirm_game_face['RIGHT'] = True
-                    confirm_game_face['LEFT'] = False
-                    print("CONFIRM RIGHT")
-                elif (confirm_game_face['TIMES_HOLDING_ONE'] < -15):
-                    confirm_game_face['TIMES_HOLDING_ONE'] = 0
-                    confirm_game_face['RIGHT'] = False
-                    confirm_game_face['LEFT'] = True
-                    print("CONFIRM LEFT")
 
-                    # print("LEFT")
-        # Display
-        cv2.imshow('B', img)
-        # Stop if escape key is pressed
-        k = cv2.waitKey(30) & 0xff
-        if k == 27:
-            # Release the VideoCapture object
-            cap.release()
-            break
+        if (CAMERA_MODE):
+            _, img = cap.read()
+            # Convert to grayscale
+            gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+            # Detect the faces
+            faces = face_cascade.detectMultiScale(gray, 1.1, 4)
+            # Draw the rectangle around each face
+            for (x, y, w, h) in faces:
+                    c = 480
+                    cv2.rectangle(img, (0, 0), (140, c), (0, 0, 255), 4)
+                    cv2.rectangle(img, (500, 0), (640, c), (0, 0, 255), 4)
+                    if (w > 95):
+                        cv2.rectangle(img, (x, y), (x+w, y+h), (255, 0, 0), 2)
+                        size_circle = 40
+                        color_circle = (200, 0, 0)
+                        # print(confirm_game_face['TIMES_HOLDING_ONE'])
+                        if (x + w/2 < 100):
+                            # circle_no = pygame.draw.circle(win, color_circle, (900, 600), size_circle)
+                            win.blit(arrow_left, (900, 600))
+                            confirm_game_face['TIMES_HOLDING_ONE'] += 1
+                            # print("RIGHT")
+                        elif (x + w/2 > 500):
+                            win.blit(arrow_right, (100, 600))
+                            # circle_no = pygame.draw.circle(win, color_circle, (100, 600), size_circle)
+                            confirm_game_face['TIMES_HOLDING_ONE'] -= 1
+                        if (confirm_game_face['TIMES_HOLDING_ONE'] > 15):
+                            confirm_game_face['TIMES_HOLDING_ONE'] = 0
+                            confirm_game_face['RIGHT'] = True
+                            confirm_game_face['LEFT'] = False
+                            print("CONFIRM RIGHT")
+                        elif (confirm_game_face['TIMES_HOLDING_ONE'] < -15):
+                            confirm_game_face['TIMES_HOLDING_ONE'] = 0
+                            confirm_game_face['RIGHT'] = False
+                            confirm_game_face['LEFT'] = True
+                            print("CONFIRM LEFT")
+
+                            # print("LEFT")
+            # Display
+            cv2.imshow('B', img)
+            # Stop if escape key is pressed
+            k = cv2.waitKey(30) & 0xff
+            if k == 27:
+                # Release the VideoCapture object
+                cap.release()
+                break
+
         # I count the time on game for calculate children points
+
         if (current_window == WINDOWS['ON_GAME'] and int(round(time.time())) - timer_update_screen >= children.refresh_time):
             timer_update_screen = int(round(time.time()))
             children.timer_running += 1
