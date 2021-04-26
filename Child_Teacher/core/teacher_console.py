@@ -194,15 +194,25 @@ def generate_excel(childrens):
         total_words_times.append(c.final_time)
         for w in c.words:
             for i, t in enumerate(total_words):
-                if w == t:
-                    if c.fails[i] == 1:
+                print("compared", w, t)
+                if str(w) == str(t):
+                    if str(c.fails[i]) == str(1):
                         total_failed[i] += 1
+                        print("match")
+                    # total_failed[i] += 1
 
     print('All the child names:', children_names)
     print('Words to match:', total_words)
     print('Total failed:', total_failed)
     print('All children points :', children_punctuations)
     print('Total times of the game :', total_words_times)
+    """
+        All the child names: ['bea', 'isolation']
+        Words to match: ['galdiolo', 'plamera', 'adrono', 'tractor', 'abarzar', 'tornillo', 'falda', 'bloso']
+        Total failed: [0, 0, 0, 0, 0, 0, 0, 0]
+        All children points : [50, 39]
+        Total times of the game : [6, 10]
+    """
 
     # I create the csv:
     workbook = xlsxwriter.Workbook('B.xlsx')
@@ -232,7 +242,7 @@ def generate_excel(childrens):
     col = 6
     for index, c in enumerate(total_words):
         worksheet.write(row, col, c)
-        worksheet.write(row, col+1, total_failed[index])
+        worksheet.write(row, col+1, str(total_failed[index]))
         row += 1
     row = 1
     col = 9
@@ -266,8 +276,8 @@ def generate_excel(childrens):
     })
     # Words and fails:
     chart = workbook.add_chart({'type': 'column'})
-    chart.add_series({'categories': '=Sheet1!$G$2:$G$5',
-                      'values': '=Sheet1!$H$2:$H$5',
+    chart.add_series({'categories': '=Sheet1!$G$2:$G$'+str(len(total_words)+1),
+                      'values': '=Sheet1!$H$2:$H$'+str(len(total_words)+1),
                       'name': 'Fallos por palabra'})
     chart.set_title({'name': 'Palabras más falladas'})
     chart.set_legend({'position': 'bottom'})
@@ -277,19 +287,19 @@ def generate_excel(childrens):
         'fill':   {'color': '#FFFFC2'}
     })
     # Every children:
-    row = [2, 5]
+    row = [2,  len(total_words)+1]
 
     coordenates = []
     values = []
     position = [1]
-    max_coordenates = len(childrens)+1
+    max_coordenates = len(total_words)+1
     for i in range(0, max_coordenates):
         coordenates.append("=Sheet1!$K$" + str(row[0]) + ":$K$" + str(row[1]))
         values.append("=Sheet1!$L$" + str(row[0]) + ":$L$" + str(row[1]))
         if i != 0:
             position.append(i*15)
-        row[0] += 5
-        row[1] += 5
+        row[0] += len(total_words)+1
+        row[1] += len(total_words)+1
     # print(position)
 
     for index, c in enumerate(childrens):

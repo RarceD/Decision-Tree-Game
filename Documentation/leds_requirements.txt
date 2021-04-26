@@ -18,4 +18,4 @@ la fuente 1 se utilice en la pantalla del login, waiting, end y ranking
 Mientras que la fuente 2 solo para las pantallas de preguntas
 
 [x] - Importante que se pueda jugar sin la necesidad de requerir cámara
-[ ] - En el Excel solo se generan los gráficos de las cuatro primeras palabras independientemente del modo en el que se esté
+[x] - En el Excel solo se generan los gráficos de las cuatro primeras palabras independientemente del modo en el que se esté
