@@ -198,7 +198,7 @@
     "border_colors": "(123,0,0)",
     "waiting_children_font_up": "Espera un momento a que todos",
     "waiting_children_font_down": "tus amigos entren al juego",
-    "question_text_2": "¿ Es correcta esta palabra ?",
+    "question_text_2": "Es correcta está palabra ?",
     "color_circle_wrong": "(245, 117, 66)",
     "color_circle_right": "(38, 106, 189)",
     "radio_circle": 70

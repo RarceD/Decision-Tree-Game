@@ -165,13 +165,13 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     win.blit(parser.background_game, (0, 0))
     win.blit(image_game_logo, (870, 30))
     # Render the current text.
-    pygame.draw.rect(win, parser.border_colors, (200, 50, 600, 150), 2)
+    pygame.draw.rect(win, parser.border_colors, (50, 50, 600 + 150, 150), 2)
     pygame.draw.rect(win, parser.border_colors, (170, 300, 330, 100), 2)
     pygame.draw.rect(win, parser.border_colors, (550, 300, 250, 220), 2)
     color_letters = parser.letters_color
     txt_surface = font.render(
         parser.question_text_2, True, color_letters)
-    win.blit(txt_surface, (250, 120))
+    win.blit(txt_surface, (100, 100))
     txt_surface = font.render(
         mode.words_right[children.current_question-1], True, color_letters)
     # Each word has a diferent image:
@@ -190,7 +190,7 @@ def load_page_game(win, font, image_children,  image_game_logo, events, client):
     circle_no = pygame.draw.circle(win, color_circle, (900, 300), radio_circle)
 
     color_text = parser.letters_color
-    offset = 17
+    offset = 22
     txt_surface = font.render("SI", True, color_text)
     win.blit(txt_surface, (100-offset, 300-offset))
     txt_surface = font.render("NO", True, color_text)
@@ -649,7 +649,7 @@ def load_page_ranking(win, events, font, image_children, image_game_logo, image_
                     pygame.mixer.music.play(0)
 
 
-def main():
+def main():   
     global current_window, children, mode, confirm_game_face
     clock = pygame.time.Clock()
     # Start the game on LOGIN:

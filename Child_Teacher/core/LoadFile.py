@@ -34,7 +34,7 @@ class LoadFile():
         self.branche_route_right = ""
         self.branche_route_wrong = ""
 
-        with open(input_file) as json_file:
+        with open(input_file,  encoding='utf-8') as json_file:
             data = json.load(json_file)
             for index, p in enumerate(data['icon_child_sharable']):
                 self.icon_child.append(p)
