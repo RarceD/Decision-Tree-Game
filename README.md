@@ -19,22 +19,28 @@ An ESP32 is also connected to the listen topic of the children console, in every
 ### Pygame
 All the GUI is implemented using pygame and the data and color informations is introduce via a <a href="https://github.com/RarceD/Decision-Tree-Game/blob/main/Child_Teacher/input.json">json file</a> filled by a real teacher that can change over the diferent classes or acording the children evolution.
 
+### Pygame
+For modified:
+```python
+pip install -r requirements.txt
+```
+
 For simple execution there is a .bat file that can easily run the program and simulate multiple children.
 ## Images of the real game:
 ### Waiting other children: ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="400"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/waiting_other_children.png" alt="drawing" width="600"/>
 
 ### On game 1: ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game.png" alt="drawing" width="400"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game.png" alt="drawing" width="600"/>
 
 ### On game 2:  ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_2.png" alt="drawing" width="400"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_2.png" alt="drawing" width="600"/>
 
 ### On game 3:  ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_3.png" alt="drawing" width="400"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/on_game_3.png" alt="drawing" width="600"/>
 
 ### Ranking done: ###
-<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/end_game.png" alt="drawing" width="400"/>
+<img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/end_game.png" alt="drawing" width="600"/>
 
 ### Excel generated for the teacher: ###
 <img src="https://github.com/RarceD/Decision-Tree-Game/blob/main/Documentation/images_readme/output_excel.png" alt="drawing" width="600"/>
