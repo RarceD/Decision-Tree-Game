@@ -101,7 +101,7 @@ class LoadFile():
             self.sound_ranking = data['sound_config_children']['ranking']
             # Final branches
             self.branche_route_right = data['children_branches_images_wrong']['right']
-            r = random.randint(0, 8)
+            r = random.randint(0,len(data['children_branches_images_wrong']['wrong']))
             self.branche_route_wrong = data['children_branches_images_wrong']['wrong'][r]
 
     def parse_data(self, pygame):
